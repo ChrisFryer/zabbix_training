@@ -221,10 +221,9 @@
                 <li><a href="#section4">4. When to Use Zabbix Proxies</a></li>
                 <li><a href="#section5">5. High Availability Architectures</a></li>
                 <li><a href="#section6">6. Zabbix Server Configuration</a></li>
-                <li><a href="#section7">7. Log Management and Rotation</a></li>
-                <li><a href="#section8">8. Common Deployment Issues</a></li>
-                <li><a href="#section9">9. Maintenance Best Practices</a></li>
-                <li><a href="#section10">10. Additional Resources</a></li>
+                <li><a href="#section7">7. Common Deployment Issues</a></li>
+                <li><a href="#section8">8. Maintenance Best Practices</a></li>
+                <li><a href="#section9">9. Additional Resources</a></li>
             </ul>
         </div>
 
@@ -1599,6 +1598,7 @@ NodeAddress=192.168.1.11:10051</code></pre>
             </ul>
 
             <p><strong>Option 2: API-Based Configuration Sync</strong></p>
+            <p>Use Zabbix API to programmatically export from one server and import to another:</p>
             <pre><code># Example: Export config from Site A, import to Site B
 # Export templates
 curl -X POST https://zabbix-a.company.com/api_jsonrpc.php \
@@ -1607,6 +1607,13 @@ curl -X POST https://zabbix-a.company.com/api_jsonrpc.php \
 # Import to Site B
 curl -X POST https://zabbix-b.company.com/api_jsonrpc.php \
   -d '{"jsonrpc":"2.0","method":"configuration.import","params":{...}}'</code></pre>
+            <p><strong>Useful Resources:</strong></p>
+            <ul>
+                <li><strong>API Documentation:</strong> <a href="https://www.zabbix.com/documentation/current/en/manual/api/reference/configuration/export" target="_blank">configuration.export</a> and <a href="https://www.zabbix.com/documentation/current/en/manual/api/reference/configuration/import" target="_blank">configuration.import</a></li>
+                <li><strong>Official Python Library:</strong> <a href="https://github.com/zabbix/python-zabbix-utils" target="_blank">zabbix-utils</a> (recommended for automation)</li>
+                <li><strong>Example Script:</strong> <a href="https://github.com/lukecyca/pyzabbix/blob/master/examples/import_templates.py" target="_blank">import_templates.py</a></li>
+                <li><strong>Export/Import Tool:</strong> <a href="https://github.com/southbridgeio/zabbix-review-export-import" target="_blank">zabbix-review-export-import</a></li>
+            </ul>
 
             <p><strong>Option 3: Git-Based Configuration Management</strong></p>
             <ul>
@@ -1871,7 +1878,7 @@ DebugLevel=3              # 3 = warnings (increase to 4 for troubleshooting)
 LogSlowQueries=3000       # Log queries taking > 3 seconds</code></pre>
 
         <div class="warning">
-            <p><strong>Important:</strong> Setting <code>LogFileSize=0</code> means the built-in log rotation is disabled. You MUST configure logrotate to prevent disk space issues (see Section 7).</p>
+            <p><strong>Important:</strong> Setting <code>LogFileSize=0</code> means the built-in log rotation is disabled. You MUST configure logrotate to prevent disk space issues.</p>
         </div>
 
         <h3>6.5 Monitoring Server Health</h3>
@@ -1919,11 +1926,9 @@ tail -f /var/log/zabbix/zabbix_server.log</code></pre>
 
         <hr>
 
-        <hr>
+        <h2 id="section7">7. Common Deployment Issues</h2>
 
-        <h2 id="section8">8. Common Deployment Issues</h2>
-
-        <h3>8.1 Issue: Inconsistent Agent Configuration Files</h3>
+        <h3>7.1 Issue: Inconsistent Agent Configuration Files</h3>
 
         <h4>Symptoms:</h4>
         <ul>
@@ -1959,7 +1964,7 @@ grep -E "^[A-Z].*=$" /etc/zabbix/zabbix_agentd.conf</code></pre>
             <li>Test agent connection after any change</li>
         </ol>
 
-        <h3>8.2 Issue: Wrong Agent Type Configured</h3>
+        <h3>7.2 Issue: Wrong Agent Type Configured</h3>
 
         <h4>Symptoms:</h4>
         <ul>
@@ -2014,7 +2019,7 @@ ListenIP=0.0.0.0
 ListenPort=10050
 Hostname=server01.example.com.au</code></pre>
 
-        <h3>8.3 Issue: Unnecessary Proxies Deployed</h3>
+        <h3>7.3 Issue: Unnecessary Proxies Deployed</h3>
 
         <h4>Symptoms:</h4>
         <ul>
@@ -2075,7 +2080,7 @@ Update agent configs to point to server</code></pre>
             </li>
         </ol>
 
-        <h3>8.4 Issue: Unreliable HA Implementation</h3>
+        <h3>7.4 Issue: Unreliable HA Implementation</h3>
 
         <h4>Symptoms:</h4>
         <ul>
@@ -2083,55 +2088,94 @@ Update agent configs to point to server</code></pre>
             <li>Database becomes inconsistent</li>
             <li>Split-brain scenarios</li>
             <li>Monitoring unavailable during failures</li>
+            <li>Native Zabbix HA nodes fail when database is unavailable</li>
         </ul>
 
         <h4>Root Cause:</h4>
         <ul>
-            <li>Complex HA setup without expertise</li>
-            <li>Missing witness node for quorum</li>
-            <li>Two-node PostgreSQL cluster without proper coordination</li>
-            <li>Over-engineered solution</li>
+            <li>Misunderstanding that Native Zabbix HA provides complete HA (it only handles Zabbix process failover)</li>
+            <li>Complex database HA setup without expertise</li>
+            <li>Missing witness node for database quorum</li>
+            <li>Two-node database cluster without proper coordination (split-brain risk)</li>
+            <li>Attempting cross-site HA without third location for witness</li>
+            <li>Over-engineered solution beyond team capabilities</li>
         </ul>
 
         <h4>Detection:</h4>
         <ul>
-            <li>Test failover procedures</li>
-            <li>Review cluster configuration</li>
-            <li>Check for witness/arbiter nodes</li>
-            <li>Verify quorum mechanism</li>
+            <li>Test failover procedures (database AND Zabbix server)</li>
+            <li>Review cluster configuration for both database and Zabbix HA</li>
+            <li>Check for witness/arbiter nodes (critical for 2-site setups)</li>
+            <li>Verify quorum mechanism exists</li>
+            <li>Test what happens when database site fails</li>
         </ul>
+
+        <h4>Critical Understanding:</h4>
+        <div class="warning">
+            <p><strong>Native Zabbix HA ≠ Complete HA</strong></p>
+            <ul>
+                <li>Native HA only handles Zabbix server <em>process</em> failover (~5 seconds)</li>
+                <li>Database is still a single point of failure</li>
+                <li>If database goes down, both Zabbix HA nodes fail</li>
+                <li>True site redundancy requires database clustering (very complex)</li>
+                <li>Database clustering requires third site for witness node</li>
+            </ul>
+        </div>
 
         <h4>Resolution Options:</h4>
 
         <div class="success">
-            <h4>Option A: Simplify to Native HA</h4>
+            <h4>Option A: Dual Independent Zabbix Servers (Recommended)</h4>
+            <p>Deploy two completely independent Zabbix instances (see Section 5.5):</p>
             <ol>
-                <li>Deploy two self-contained Zabbix servers</li>
-                <li>Each with dedicated PostgreSQL instance</li>
-                <li>Use Zabbix native HA for coordination</li>
-                <li>Rely on backups/snapshots for recovery</li>
-                <li>Accept brief outage during maintenance</li>
+                <li>Site A: Complete stack (Frontend + Server + Database)</li>
+                <li>Site B: Complete stack (Frontend + Server + Database)</li>
+                <li>No shared components between sites</li>
+                <li>Both actively monitor same infrastructure</li>
+                <li>Manage configuration synchronization (manual or scripted)</li>
+                <li><strong>Advantages:</strong> Maximum redundancy, survives complete site loss, zero RPO, simple to understand</li>
+                <li><strong>Trade-offs:</strong> Double resources, configuration drift risk, duplicate alerting</li>
             </ol>
 
-            <h4>Option B: Properly Implement PostgreSQL HA</h4>
+            <h4>Option B: VMware HA + NetApp SVM-DR (Inherited Infrastructure)</h4>
+            <p>Leverage existing infrastructure for DR (see Section 5.4):</p>
             <ol>
-                <li>Add witness node for quorum (3-node setup)</li>
-                <li>Implement pg_auto_failover or Patroni</li>
+                <li>Site A: Active Zabbix with database on NetApp SVM</li>
+                <li>Site B: Replica VM (powered off) with replicated NetApp SVM</li>
+                <li>VMware HA protects within each site</li>
+                <li>NetApp SVM-DR replicates storage between sites</li>
+                <li>Manual failover procedure for site disasters</li>
+                <li><strong>Advantages:</strong> Uses existing infrastructure, simpler than database clustering</li>
+                <li><strong>Trade-offs:</strong> RPO ~24 hours, RTO ~4 hours, manual failover, this is DR not HA</li>
+            </ol>
+
+            <h4>Option C: Properly Implement Database Clustering (Complex)</h4>
+            <p><strong>Warning:</strong> Only pursue if you have database expertise and a third site:</p>
+            <ol>
+                <li>Requires third site/location for witness node (cannot do 2-site properly)</li>
+                <li>Implement pg_auto_failover or Patroni with witness</li>
                 <li>Use HAProxy for connection routing</li>
-                <li>Ensure proper testing of failover</li>
-                <li>Document recovery procedures</li>
+                <li>Combine with Native Zabbix HA for Zabbix process failover</li>
+                <li>Extensive testing of all failover scenarios</li>
+                <li>Document complex recovery procedures</li>
+                <li><strong>Reality check:</strong> Very complex, requires PostgreSQL expertise, needs third location</li>
             </ol>
 
-            <h4>Option C: Use Existing Infrastructure</h4>
+            <h4>Option D: Accept Simpler Reality (Often Best)</h4>
             <ol>
-                <li>Leverage NetApp SnapMirror</li>
-                <li>VMware HA/DRS for VM failover</li>
-                <li>Regular backups and tested recovery</li>
-                <li>Simpler operational model</li>
+                <li>Single Zabbix server with VMware HA (protects against hardware failure)</li>
+                <li>Regular database backups and tested recovery</li>
+                <li>Accept brief outage for patching/maintenance</li>
+                <li>Much simpler operational model</li>
+                <li><strong>Reality:</strong> For most environments, monitoring downtime is acceptable</li>
             </ol>
         </div>
 
-        <h3>8.5 Issue: Server Configuration Not Tuned</h3>
+        <div class="info">
+            <p><strong>Key Takeaway:</strong> Refer to Section 5 "High Availability Architectures" for detailed analysis of each approach. The "simple" Native Zabbix HA only solves part of the problem - the database remains the critical dependency.</p>
+        </div>
+
+        <h3>7.5 Issue: Server Configuration Not Tuned</h3>
 
         <h4>Symptoms:</h4>
         <ul>
@@ -2167,7 +2211,7 @@ grep -i "warn\|error" /var/log/zabbix/zabbix_server.log</code></pre>
             <li><strong>Document final tuned configuration</strong></li>
         </ol>
 
-        <h3>8.6 Issue: Logs Fill Disk</h3>
+        <h3>7.6 Issue: Logs Fill Disk</h3>
 
         <h4>Symptoms:</h4>
         <ul>
@@ -2201,9 +2245,9 @@ sudo systemctl restart zabbix-server
 
         <hr>
 
-        <h2 id="section9">9. Maintenance Best Practices</h2>
+        <h2 id="section8">8. Maintenance Best Practices</h2>
 
-        <h3>9.1 Regular Maintenance Tasks</h3>
+        <h3>8.1 Regular Maintenance Tasks</h3>
 
         <h4>Daily:</h4>
         <ul>
@@ -2238,7 +2282,7 @@ sudo systemctl restart zabbix-server
             <li>Security updates and patches</li>
         </ul>
 
-        <h3>9.2 Backup Strategy</h3>
+        <h3>8.2 Backup Strategy</h3>
 
         <h4>Critical Items to Back Up:</h4>
         <ul>
@@ -2268,7 +2312,7 @@ sudo systemctl restart zabbix-server
             <li>Rapid recovery capability</li>
         </ul>
 
-        <h3>9.3 Change Management</h3>
+        <h3>8.3 Change Management</h3>
 
         <h4>Before Making Changes:</h4>
         <ol>
@@ -2287,7 +2331,7 @@ sudo systemctl restart zabbix-server
             <li>Review lessons learned</li>
         </ol>
 
-        <h3>9.4 Documentation Requirements</h3>
+        <h3>8.4 Documentation Requirements</h3>
 
         <h4>Maintain Current Documentation for:</h4>
         <ul>
@@ -2300,7 +2344,7 @@ sudo systemctl restart zabbix-server
             <li>Known issues and workarounds</li>
         </ul>
 
-        <h3>9.5 Skill Development</h3>
+        <h3>8.5 Skill Development</h3>
 
         <h4>Recommended Training Path:</h4>
         <ol>
@@ -2314,9 +2358,9 @@ sudo systemctl restart zabbix-server
 
         <hr>
 
-        <h2 id="section10">10. Additional Resources</h2>
+        <h2 id="section9">9. Additional Resources</h2>
 
-        <h3>10.1 Official Resources</h3>
+        <h3>9.1 Official Resources</h3>
 
         <h4>Documentation:</h4>
         <ul>
@@ -2340,7 +2384,7 @@ sudo systemctl restart zabbix-server
             <li><strong>GitHub:</strong> <a href="https://github.com/zabbix/" target="_blank">https://github.com/zabbix/</a></li>
         </ul>
 
-        <h3>10.2 Video Learning Resources</h3>
+        <h3>9.2 Video Learning Resources</h3>
 
         <h4>YouTube Channels:</h4>
         <ul>
@@ -2364,14 +2408,14 @@ sudo systemctl restart zabbix-server
             <li>Problem detection and alerting</li>
         </ul>
 
-        <h3>10.3 Books and Guides</h3>
+        <h3>9.3 Books and Guides</h3>
         <ul>
             <li><strong>"The Zabbix Book":</strong> <a href="https://thezabbixbook.com/" target="_blank">https://thezabbixbook.com/</a></li>
             <li>"Zabbix Cookbook" by Patrik Uytterhoeven</li>
             <li>"Zabbix 4 Network Monitoring" by Patrik Uytterhoeven</li>
         </ul>
 
-        <h3>10.4 Third-Party Tools and Integrations</h3>
+        <h3>9.4 Third-Party Tools and Integrations</h3>
 
         <h4>Useful Additions:</h4>
         <ul>
@@ -2381,7 +2425,7 @@ sudo systemctl restart zabbix-server
             <li>Custom scripts repository</li>
         </ul>
 
-        <h3>10.5 Getting Help</h3>
+        <h3>9.5 Getting Help</h3>
 
         <h4>When You Need Assistance:</h4>
         <ol>
@@ -2401,7 +2445,7 @@ sudo systemctl restart zabbix-server
 
         <hr>
 
-        <h2>Appendix A: Glossary</h2>
+        <h2>Appendix: Glossary</h2>
 
         <table>
             <tr>
@@ -2479,8 +2523,10 @@ sudo systemctl restart zabbix-server
 
         <div class="info" style="margin-top: 40px;">
             <h3>Questions or Feedback?</h3>
-            <p>This document is intended as a living training resource. If you identify errors, have suggestions for improvement, or need clarification on any topics, please contact the Infrastructure Team.</p>
-            
+            <p>This document is intended as a living training resource. If you identify errors, have suggestions for improvement, or need clarification on any topics, please contact Chris Fryer.</p>
+
+            <p><strong>Source:</strong> This document is maintained on GitHub at <a href="https://github.com/ChrisFryer/zabbix_training" target="_blank">https://github.com/ChrisFryer/zabbix_training</a></p>
+
             <p><strong>Remember:</strong> The best monitoring solution is one that is simple, reliable, and well understood by the team responsible for maintaining it. When in doubt, choose simplicity and proven approaches over complex or novel architectures.</p>
         </div>
 
