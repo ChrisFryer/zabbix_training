@@ -221,9 +221,10 @@
                 <li><a href="#section4">4. When to Use Zabbix Proxies</a></li>
                 <li><a href="#section5">5. High Availability Architectures</a></li>
                 <li><a href="#section6">6. Zabbix Server Configuration</a></li>
-                <li><a href="#section7">7. Common Deployment Issues</a></li>
-                <li><a href="#section8">8. Maintenance Best Practices</a></li>
-                <li><a href="#section9">9. Additional Resources</a></li>
+                <li><a href="#section7">7. Log Management and Rotation</a></li>
+                <li><a href="#section8">8. Common Deployment Issues</a></li>
+                <li><a href="#section9">9. Maintenance Best Practices</a></li>
+                <li><a href="#section10">10. Additional Resources</a></li>
             </ul>
         </div>
 
@@ -1918,9 +1919,11 @@ tail -f /var/log/zabbix/zabbix_server.log</code></pre>
 
         <hr>
 
-        <h2 id="section7">7. Common Deployment Issues</h2>
+        <hr>
 
-        <h3>7.1 Issue: Inconsistent Agent Configuration Files</h3>
+        <h2 id="section8">8. Common Deployment Issues</h2>
+
+        <h3>8.1 Issue: Inconsistent Agent Configuration Files</h3>
 
         <h4>Symptoms:</h4>
         <ul>
@@ -1956,7 +1959,7 @@ grep -E "^[A-Z].*=$" /etc/zabbix/zabbix_agentd.conf</code></pre>
             <li>Test agent connection after any change</li>
         </ol>
 
-        <h3>7.2 Issue: Wrong Agent Type Configured</h3>
+        <h3>8.2 Issue: Wrong Agent Type Configured</h3>
 
         <h4>Symptoms:</h4>
         <ul>
@@ -2011,7 +2014,7 @@ ListenIP=0.0.0.0
 ListenPort=10050
 Hostname=server01.example.com.au</code></pre>
 
-        <h3>7.3 Issue: Unnecessary Proxies Deployed</h3>
+        <h3>8.3 Issue: Unnecessary Proxies Deployed</h3>
 
         <h4>Symptoms:</h4>
         <ul>
@@ -2072,7 +2075,7 @@ Update agent configs to point to server</code></pre>
             </li>
         </ol>
 
-        <h3>7.4 Issue: Unreliable HA Implementation</h3>
+        <h3>8.4 Issue: Unreliable HA Implementation</h3>
 
         <h4>Symptoms:</h4>
         <ul>
@@ -2128,7 +2131,7 @@ Update agent configs to point to server</code></pre>
             </ol>
         </div>
 
-        <h3>7.5 Issue: Server Configuration Not Tuned</h3>
+        <h3>8.5 Issue: Server Configuration Not Tuned</h3>
 
         <h4>Symptoms:</h4>
         <ul>
@@ -2164,7 +2167,7 @@ grep -i "warn\|error" /var/log/zabbix/zabbix_server.log</code></pre>
             <li><strong>Document final tuned configuration</strong></li>
         </ol>
 
-        <h3>7.6 Issue: Logs Fill Disk</h3>
+        <h3>8.6 Issue: Logs Fill Disk</h3>
 
         <h4>Symptoms:</h4>
         <ul>
@@ -2198,9 +2201,9 @@ sudo systemctl restart zabbix-server
 
         <hr>
 
-        <h2 id="section8">8. Maintenance Best Practices</h2>
+        <h2 id="section9">9. Maintenance Best Practices</h2>
 
-        <h3>8.1 Regular Maintenance Tasks</h3>
+        <h3>9.1 Regular Maintenance Tasks</h3>
 
         <h4>Daily:</h4>
         <ul>
@@ -2235,7 +2238,7 @@ sudo systemctl restart zabbix-server
             <li>Security updates and patches</li>
         </ul>
 
-        <h3>8.2 Backup Strategy</h3>
+        <h3>9.2 Backup Strategy</h3>
 
         <h4>Critical Items to Back Up:</h4>
         <ul>
@@ -2265,7 +2268,7 @@ sudo systemctl restart zabbix-server
             <li>Rapid recovery capability</li>
         </ul>
 
-        <h3>8.3 Change Management</h3>
+        <h3>9.3 Change Management</h3>
 
         <h4>Before Making Changes:</h4>
         <ol>
@@ -2284,7 +2287,7 @@ sudo systemctl restart zabbix-server
             <li>Review lessons learned</li>
         </ol>
 
-        <h3>8.4 Documentation Requirements</h3>
+        <h3>9.4 Documentation Requirements</h3>
 
         <h4>Maintain Current Documentation for:</h4>
         <ul>
@@ -2297,7 +2300,7 @@ sudo systemctl restart zabbix-server
             <li>Known issues and workarounds</li>
         </ul>
 
-        <h3>8.5 Skill Development</h3>
+        <h3>9.5 Skill Development</h3>
 
         <h4>Recommended Training Path:</h4>
         <ol>
@@ -2311,9 +2314,9 @@ sudo systemctl restart zabbix-server
 
         <hr>
 
-        <h2 id="section9">9. Additional Resources</h2>
+        <h2 id="section10">10. Additional Resources</h2>
 
-        <h3>9.1 Official Resources</h3>
+        <h3>10.1 Official Resources</h3>
 
         <h4>Documentation:</h4>
         <ul>
@@ -2337,7 +2340,7 @@ sudo systemctl restart zabbix-server
             <li><strong>GitHub:</strong> <a href="https://github.com/zabbix/" target="_blank">https://github.com/zabbix/</a></li>
         </ul>
 
-        <h3>9.2 Video Learning Resources</h3>
+        <h3>10.2 Video Learning Resources</h3>
 
         <h4>YouTube Channels:</h4>
         <ul>
@@ -2361,14 +2364,14 @@ sudo systemctl restart zabbix-server
             <li>Problem detection and alerting</li>
         </ul>
 
-        <h3>9.3 Books and Guides</h3>
+        <h3>10.3 Books and Guides</h3>
         <ul>
             <li><strong>"The Zabbix Book":</strong> <a href="https://thezabbixbook.com/" target="_blank">https://thezabbixbook.com/</a></li>
             <li>"Zabbix Cookbook" by Patrik Uytterhoeven</li>
             <li>"Zabbix 4 Network Monitoring" by Patrik Uytterhoeven</li>
         </ul>
 
-        <h3>9.4 Third-Party Tools and Integrations</h3>
+        <h3>10.4 Third-Party Tools and Integrations</h3>
 
         <h4>Useful Additions:</h4>
         <ul>
@@ -2378,7 +2381,7 @@ sudo systemctl restart zabbix-server
             <li>Custom scripts repository</li>
         </ul>
 
-        <h3>9.5 Getting Help</h3>
+        <h3>10.5 Getting Help</h3>
 
         <h4>When You Need Assistance:</h4>
         <ol>
@@ -2398,7 +2401,7 @@ sudo systemctl restart zabbix-server
 
         <hr>
 
-        <h2>Appendix: Glossary</h2>
+        <h2>Appendix A: Glossary</h2>
 
         <table>
             <tr>
@@ -2461,13 +2464,13 @@ sudo systemctl restart zabbix-server
             <tr>
                 <td>1.0</td>
                 <td>October 2025</td>
-                <td>Infrastructure Team</td>
+                <td>Chris Fryer</td>
                 <td>Initial training document</td>
             </tr>
             <tr>
                 <td>1.1</td>
                 <td>October 2025</td>
-                <td>Infrastructure Team</td>
+                <td>Chris Fryer</td>
                 <td>Added SVG diagrams, expanded active agent overhead warnings, replaced paid training references with free Zabbix 101 course</td>
             </tr>
         </table>
