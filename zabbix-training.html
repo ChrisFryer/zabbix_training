@@ -221,10 +221,9 @@
                 <li><a href="#section4">4. When to Use Zabbix Proxies</a></li>
                 <li><a href="#section5">5. High Availability Architectures</a></li>
                 <li><a href="#section6">6. Zabbix Server Configuration</a></li>
-                <li><a href="#section7">7. Log Management and Rotation</a></li>
-                <li><a href="#section8">8. Common Deployment Issues</a></li>
-                <li><a href="#section9">9. Maintenance Best Practices</a></li>
-                <li><a href="#section10">10. Additional Resources</a></li>
+                <li><a href="#section7">7. Common Deployment Issues</a></li>
+                <li><a href="#section8">8. Maintenance Best Practices</a></li>
+                <li><a href="#section9">9. Additional Resources</a></li>
             </ul>
         </div>
 
@@ -263,7 +262,7 @@
                 <li>Best practices for production deployments</li>
             </ul>
             
-            <p><strong>Time Commitment:</strong> Approximately 4-6 hours of self-paced learning</p>
+            <p><strong>Time Commitment:</strong> Approximately 2 hours of self-paced learning</p>
             
             <h4>Why This Course:</h4>
             <ul>
@@ -640,15 +639,15 @@ Result:
         <h4>When Active Agents ARE Appropriate for Windows:</h4>
         <ul>
             <li>✅ Simple event forwarding (entire log categories)</li>
-            <li>✅ Infrequent event checks (hourly or daily)</li>
-            <li>✅ Single Event ID monitoring</li>
+            <li>✅ Infrequent event checks (15mins, hourly or daily)</li>
+            <li>✅ Reduced Event ID monitoring</li>
             <li>✅ When dedicated event forwarding solutions not available</li>
         </ul>
 
         <h4>When to AVOID Active Agents on Windows:</h4>
         <ul>
-            <li>❌ Monitoring multiple specific Event IDs (> 5 IDs)</li>
-            <li>❌ High-frequency event log scanning (< 5 minute intervals)</li>
+            <li>❌ Monitoring multiple specific Event IDs (> 50 IDs)</li>
+            <li>❌ High-frequency event log scanning (< 1 minute intervals)</li>
             <li>❌ Production servers with memory constraints</li>
             <li>❌ Systems running memory-intensive applications</li>
             <li>❌ Any scenario where passive agents can work instead</li>
@@ -661,7 +660,7 @@ Result:
                     <li>Native Windows capability</li>
                     <li>Minimal overhead</li>
                     <li>Centralised collection</li>
-                    <li>Forward events to central collector, monitor from there</li>
+                    <li>Forward events to central collector, monitor from there (where performance spikes wont impact production services)</li>
                 </ul>
             </li>
             <li><strong>Use Passive Agents with Targeted Items</strong>
@@ -723,7 +722,6 @@ BufferSize=100</code></pre>
             <ul>
                 <li>Active agents require exact hostname match between config and frontend</li>
                 <li>This is the #1 cause of "Agent not available" errors</li>
-                <li>Use <code>Hostname=</code> parameter, not <code>HostnameItem=</code> for active agents</li>
             </ul>
         </div>
 
@@ -741,7 +739,7 @@ BufferSize=100</code></pre>
             <ul>
                 <li>Use <strong>passive agents</strong> for 95% of monitoring needs</li>
                 <li>Only use active agents when you have a specific technical requirement</li>
-                <li>For Windows Event Log monitoring, use Windows Event Forwarding when possible</li>
+                <li>For Windows Event Log monitoring, use Windows Event Forwarding if performance is impacted</li>
                 <li>Maintain consistent, well-documented configuration files</li>
                 <li>Test configuration syntax before applying</li>
                 <li>Monitor agent resource usage when using active mode</li>
@@ -1080,7 +1078,11 @@ Hostname=             # Don't leave values empty
 
         <h3>5.1 Native Zabbix HA (Zabbix 6.0+)</h3>
 
-        <p>Since Zabbix 6.0, native high availability is built into the server itself. This is the <strong>recommended approach</strong> for most environments.</p>
+        <p>Since Zabbix 6.0, native high availability is built into the Zabbix server process. However, <strong>this only handles Zabbix server failover</strong> - not database availability.</p>
+
+        <div class="warning">
+            <p><strong>Critical Understanding:</strong> Native Zabbix HA is <strong>NOT</strong> a complete HA solution. It only provides automatic failover for the Zabbix server process itself. The database remains a single point of failure unless separately clustered.</p>
+        </div>
 
         <h4>How It Works:</h4>
         <ul>
@@ -1088,7 +1090,23 @@ Hostname=             # Don't leave values empty
             <li>Automatic failover without external clustering tools</li>
             <li>Nodes coordinate through the database</li>
             <li>Simple configuration with minimal complexity</li>
+            <li><strong>Independent of underlying infrastructure HA:</strong> Works alongside VMware HA, hypervisor clustering, etc.</li>
         </ul>
+
+        <div class="info">
+            <p><strong>Important:</strong> Native Zabbix HA handles <em>Zabbix server process</em> failover only. For true site redundancy, you still need:</p>
+            <ul>
+                <li>A highly available database (database cluster or replication)</li>
+                <li>Shared or replicated storage accessible from both sites</li>
+                <li>Network connectivity between sites for database access</li>
+            </ul>
+            <p>Native HA is <strong>independent of</strong> underlying infrastructure HA (like VMware HA clusters). However, they are <strong>not complementary</strong> when addressing the same failure domain. For example:</p>
+            <ul>
+                <li>❌ Running both Native HA nodes within the same VMware cluster provides little additional benefit</li>
+                <li>✓ Native HA shines when nodes are in different sites/locations with a shared/replicated database</li>
+                <li>✓ VMware HA alone is simpler for single-site protection</li>
+            </ul>
+        </div>
 
         <div class="svg-container">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 400">
@@ -1127,9 +1145,9 @@ Hostname=             # Don't leave values empty
                 </marker>
               </defs>
               
-              <rect x="50" y="360" width="600" height="35" fill="#f1f8e9" stroke="#558b2f" stroke-width="1" rx="3"/>
-              <text x="60" y="378" font-size="11" font-weight="bold" fill="#33691e">✓ Benefits:</text>
-              <text x="60" y="390" font-size="9" fill="#558b2f">Simple configuration • No external clustering tools • Automatic failover (~5 seconds) • Works across data centres</text>
+              <rect x="50" y="360" width="600" height="35" fill="#fff3e0" stroke="#f57c00" stroke-width="1" rx="3"/>
+              <text x="60" y="378" font-size="11" font-weight="bold" fill="#e65100">⚠ Note:</text>
+              <text x="60" y="390" font-size="9" fill="#666">This diagram shows Zabbix server HA only • Database is still single point of failure • ~5 second failover applies to Zabbix process only</text>
             </svg>
         </div>
 
@@ -1142,48 +1160,98 @@ NodeAddress=192.168.1.10:10051
 HANodeName=zabbix-node-02
 NodeAddress=192.168.1.11:10051</code></pre>
 
-        <h4>Benefits:</h4>
+        <h4>What Native HA Provides:</h4>
         <ul>
-            <li>Simple configuration</li>
-            <li>No external clustering tools (Pacemaker, Corosync, etc.)</li>
-            <li>Works across data centres</li>
-            <li>Database-agnostic</li>
-            <li>Automatic failover in ~5 seconds</li>
+            <li>Zabbix server process failover (not database failover)</li>
+            <li>No external clustering tools needed (Pacemaker, Corosync, etc.)</li>
+            <li>Automatic failover in ~5 seconds (Zabbix process only)</li>
+            <li>Useful for single-site scenarios with shared database</li>
         </ul>
 
-        <h3>5.2 Database HA Options</h3>
+        <div class="warning">
+            <h4>What Native HA Does NOT Provide:</h4>
+            <ul>
+                <li>❌ Database high availability or failover</li>
+                <li>❌ Cross-site redundancy (database must be accessible from both nodes)</li>
+                <li>❌ Protection if database site fails</li>
+                <li>❌ True zero-downtime patching (database patching still causes outage)</li>
+            </ul>
+        </div>
 
-        <p>For complete high availability, the database also needs redundancy.</p>
+        <div class="info">
+            <h4>Limited Use Case: Patching Zabbix Server Without Database Downtime</h4>
+            <p>Native HA can enable Zabbix server maintenance without <em>Zabbix</em> downtime, <strong>but only when the database remains available:</strong></p>
+            <ol>
+                <li>Stop Zabbix server on standby node (Node 2)</li>
+                <li>Apply OS patches, upgrade Zabbix version, etc. on Node 2</li>
+                <li>Start Zabbix server on Node 2 (remains in standby)</li>
+                <li>Manually failover: Stop Node 1, Node 2 becomes active (~5 seconds)</li>
+                <li>Patch/upgrade Node 1</li>
+                <li>Start Node 1 (becomes standby)</li>
+            </ol>
+            <p><strong>Important:</strong> This does not help with database patching - that still requires an outage unless you have a separate database cluster.</p>
+        </div>
 
-        <h4>Option 1: Simple Approach with VMware/NetApp</h4>
+        <h3>5.2 The Database Problem</h3>
+
+        <p><strong>Reality Check:</strong> To achieve true high availability with Native Zabbix HA, you need a highly available database. This is significantly more complex than the Zabbix server HA itself.</p>
+
+        <div class="error">
+            <h4>❌ NOT an HA Solution: Single Database with Snapshots</h4>
+            <p><strong>Common but incorrect approach:</strong></p>
+            <ul>
+                <li>Single PostgreSQL instance on VM</li>
+                <li>Regular snapshots via NetApp SnapMirror (daily/hourly)</li>
+                <li>VM HA via vMotion/DRS within one site</li>
+            </ul>
+            <p><strong>Why this is NOT HA:</strong></p>
+            <ul>
+                <li>If the database VM fails, Zabbix HA nodes cannot function (both fail)</li>
+                <li>If the site hosting the database fails, you have no Zabbix availability</li>
+                <li>Snapshots are DR (disaster recovery), not HA (high availability)</li>
+                <li>This provides <strong>single-site protection only</strong></li>
+            </ul>
+        </div>
+
+        <h4>True Database HA Requires Clustering</h4>
+
+        <div class="warning">
+            <p><strong>Complex Reality:</strong> Achieving database HA across sites requires database clustering, which is significantly more complex than Zabbix native HA.</p>
+        </div>
+
+        <h4>Option 1: PostgreSQL Streaming Replication with pg_auto_failover</h4>
         <ul>
-            <li>Single PostgreSQL instance on VM</li>
-            <li>Regular snapshots via NetApp SnapMirror</li>
-            <li>VM HA via vMotion/DRS</li>
-            <li>Snapshot-based recovery for failures</li>
-            <li><strong>Advantage:</strong> Simple, uses existing infrastructure</li>
-            <li><strong>Trade-off:</strong> Brief outage during failover</li>
-        </ul>
-
-        <h4>Option 2: PostgreSQL Streaming Replication with pg_auto_failover</h4>
-        <ul>
-            <li>Two PostgreSQL nodes with streaming replication</li>
-            <li>Monitor node for coordination (lightweight)</li>
+            <li>Two PostgreSQL nodes with streaming replication (one per site)</li>
+            <li><strong>Monitor/witness node required</strong> (needs third location or risk split-brain)</li>
             <li>HAProxy for connection routing</li>
-            <li>Automatic failover</li>
-            <li><strong>Advantage:</strong> Minimal data loss, fast failover</li>
-            <li><strong>Complexity:</strong> Moderate, requires PostgreSQL expertise</li>
+            <li>Automatic failover for database</li>
+            <li><strong>Advantage:</strong> Minimal data loss, automatic failover</li>
+            <li><strong>Complexity:</strong> High - requires PostgreSQL expertise, three-site infrastructure</li>
+            <li><strong>Witness requirement:</strong> Third site/location needed to avoid split-brain</li>
         </ul>
 
-        <h4>Option 3: MariaDB with Galera Clustering</h4>
+        <h4>Option 2: MariaDB with Galera Clustering</h4>
         <ul>
             <li>Active/active database cluster</li>
-            <li>Multiple writable nodes</li>
-            <li>Automatic synchronisation</li>
-            <li>Requires minimum 3 nodes for proper quorum</li>
-            <li><strong>Advantage:</strong> No single point of failure</li>
-            <li><strong>Complexity:</strong> Higher, requires Galera understanding</li>
+            <li>Multiple writable nodes (typically 3 minimum)</li>
+            <li><strong>Requires minimum 3 nodes</strong> for proper quorum (prevents split-brain)</li>
+            <li>Automatic synchronisation between nodes</li>
+            <li><strong>Advantage:</strong> No single point of failure, multi-master</li>
+            <li><strong>Complexity:</strong> Very high - requires Galera understanding, three-node minimum</li>
+            <li><strong>Third node requirement:</strong> Cannot do 2-site Galera without third location</li>
         </ul>
+
+        <div class="error">
+            <h4>The Third Site/Witness Problem</h4>
+            <p>For true cross-site database HA, you cannot avoid the need for a third location:</p>
+            <ul>
+                <li><strong>Two-node clusters are inherently problematic</strong> (split-brain risk)</li>
+                <li>Witness/monitor nodes must be in a third location (not Site A or Site B)</li>
+                <li>Many organizations do not have a third datacenter location</li>
+                <li>Cloud-based witness is possible but adds dependency and complexity</li>
+            </ul>
+            <p><strong>Bottom line:</strong> If you only have two sites, true database HA is very difficult to achieve properly.</p>
+        </div>
 
         <h3>5.3 What NOT to Do</h3>
 
@@ -1245,6 +1313,10 @@ NodeAddress=192.168.1.11:10051</code></pre>
 
         <p>When inheriting an existing infrastructure with VMware HA clusters and NetApp SVM-DR replication between sites, you can leverage this architecture for Zabbix high availability.</p>
 
+        <div class="warning">
+            <p><strong>Note:</strong> This architecture does <strong>NOT</strong> use Zabbix native HA clustering. The Site B server is a complete replica of Site A that remains powered off (or powered on but idle) until a disaster recovery scenario. This is a traditional DR approach, not active-passive HA.</p>
+        </div>
+
         <div class="svg-container">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500">
               <text x="400" y="25" text-anchor="middle" font-size="16" font-weight="bold" fill="#333">
@@ -1291,9 +1363,9 @@ NodeAddress=192.168.1.11:10051</code></pre>
               <!-- Standby Zabbix VM -->
               <rect x="460" y="135" width="120" height="90" fill="#ffccbc" stroke="#d84315" stroke-width="2" rx="5"/>
               <text x="520" y="155" text-anchor="middle" font-size="11" font-weight="bold">Zabbix Server</text>
-              <text x="520" y="172" text-anchor="middle" font-size="9" fill="#666">(Standby)</text>
-              <text x="520" y="186" text-anchor="middle" font-size="9" fill="#666">Native HA Node 2</text>
-              <text x="520" y="205" text-anchor="middle" font-size="9" fill="#d84315">Powered off or idle</text>
+              <text x="520" y="172" text-anchor="middle" font-size="9" fill="#666">(DR Replica)</text>
+              <text x="520" y="186" text-anchor="middle" font-size="9" fill="#666">NOT HA node</text>
+              <text x="520" y="205" text-anchor="middle" font-size="9" fill="#d84315">Powered off until DR</text>
 
               <!-- Other VMs placeholder -->
               <rect x="600" y="135" width="120" height="90" fill="#e0e0e0" stroke="#616161" stroke-width="1" rx="5"/>
@@ -1327,44 +1399,51 @@ NodeAddress=192.168.1.11:10051</code></pre>
               <rect x="50" y="440" width="700" height="50" fill="#fff3e0" stroke="#f57c00" stroke-width="2" rx="3"/>
               <text x="60" y="458" font-size="11" font-weight="bold" fill="#e65100">Key Points:</text>
               <text x="60" y="473" font-size="9" fill="#666">• VMware HA handles VM-level failures within each site • NetApp SVM-DR replicates storage between sites</text>
-              <text x="60" y="485" font-size="9" fill="#666">• Use Zabbix native HA (6.0+) for cross-site server coordination • Site failover requires SVM-DR activation (manual process)</text>
+              <text x="60" y="485" font-size="9" fill="#666">• Site B is a DR replica (NOT a Zabbix native HA node) • Site failover requires SVM-DR activation (manual process)</text>
             </svg>
         </div>
 
         <h4>How This Architecture Works:</h4>
         <ul>
             <li><strong>Site A (Primary):</strong> Active Zabbix server running on VMware HA cluster with database on NetApp SVM</li>
-            <li><strong>Site B (DR):</strong> Standby Zabbix server on separate VMware HA cluster with replicated NetApp SVM</li>
+            <li><strong>Site B (DR):</strong> Replica Zabbix VM on separate VMware HA cluster with replicated NetApp SVM (powered off until needed)</li>
             <li><strong>VMware HA:</strong> Provides automatic VM failover within each site (hardware failure protection)</li>
-            <li><strong>NetApp SVM-DR:</strong> Replicates entire storage virtual machine including volumes, LIFs, and configuration</li>
-            <li><strong>Zabbix Native HA:</strong> Coordinates server failover between sites when Site A becomes unavailable</li>
+            <li><strong>NetApp SVM-DR:</strong> Replicates entire storage virtual machine including volumes, LIFs, and configuration to Site B</li>
+            <li><strong>No Zabbix Native HA:</strong> This is a traditional DR model, not active-passive HA clustering</li>
         </ul>
 
         <h4>Configuration Steps:</h4>
         <div class="info">
-            <p><strong>1. Configure Zabbix Native HA</strong></p>
-            <pre><code># Site A - zabbix_server.conf
-HANodeName=zabbix-site-a
-NodeAddress=192.168.1.10:10051
-
-# Site B - zabbix_server.conf
-HANodeName=zabbix-site-b
-NodeAddress=192.168.2.10:10051</code></pre>
+            <p><strong>1. Build Zabbix Server at Site A</strong></p>
+            <ul>
+                <li>Deploy Zabbix VM on VMware HA cluster at Site A</li>
+                <li>Install Zabbix server, frontend, and PostgreSQL database</li>
+                <li>Store PostgreSQL data directory on NetApp-backed storage</li>
+                <li>Configure Zabbix normally (no HA clustering needed)</li>
+            </ul>
 
             <p><strong>2. NetApp SVM-DR Setup</strong></p>
             <ul>
-                <li>Create SVM relationship between Site A and Site B</li>
-                <li>Configure SnapMirror schedule (e.g., every 15 minutes)</li>
+                <li>Create SVM relationship between Site A and Site B NetApp systems</li>
+                <li>Configure SnapMirror schedule (e.g., daily replication at midnight)</li>
                 <li>Ensure network connectivity between sites for replication</li>
-                <li>Test SVM-DR failover procedure in maintenance window</li>
+                <li>Test SVM-DR failover procedure during planned maintenance window</li>
             </ul>
 
-            <p><strong>3. Database Considerations</strong></p>
+            <p><strong>3. Site B DR Replica</strong></p>
             <ul>
-                <li>PostgreSQL data directory resides on NetApp volume</li>
-                <li>RPO (Recovery Point Objective) determined by SnapMirror schedule</li>
-                <li>RTO (Recovery Time Objective) includes SVM activation time (~5-15 minutes)</li>
-                <li>Potential data loss limited to last replication interval</li>
+                <li>Clone or replicate Zabbix VM configuration to Site B (keep powered off)</li>
+                <li>Document procedure to attach replicated SVM storage to Site B VM</li>
+                <li>Document DNS/network changes needed for failover</li>
+                <li>Keep Site B VM ready to power on and attach storage during DR event</li>
+            </ul>
+
+            <p><strong>4. Recovery Objectives</strong></p>
+            <ul>
+                <li><strong>RPO (Recovery Point Objective):</strong> ~24 hours (daily replication schedule)</li>
+                <li><strong>RTO (Recovery Time Objective):</strong> ~4 hours (manual SVM activation, mounting, service startup)</li>
+                <li>Potential data loss: Up to 24 hours of monitoring data</li>
+                <li>Acceptable for non-critical monitoring scenarios</li>
             </ul>
         </div>
 
@@ -1381,16 +1460,17 @@ NodeAddress=192.168.2.10:10051</code></pre>
         </div>
 
         <div class="error">
-            <p><strong>Scenario 2: Complete Site A Failure</strong></p>
+            <p><strong>Scenario 2: Complete Site A Failure (Disaster Recovery)</strong></p>
             <ol>
-                <li><strong>Activate SVM-DR:</strong> Break SnapMirror relationship and activate Site B SVM</li>
-                <li><strong>Mount Storage:</strong> Attach replicated volume to Site B Zabbix VM</li>
+                <li><strong>Activate SVM-DR:</strong> Break SnapMirror relationship and activate Site B SVM (manual NetApp procedure)</li>
+                <li><strong>Power On Site B VM:</strong> Start the Zabbix replica VM at Site B</li>
+                <li><strong>Mount Storage:</strong> Attach replicated SVM volume to Site B Zabbix VM</li>
                 <li><strong>Start Services:</strong> Start PostgreSQL and Zabbix server on Site B</li>
-                <li><strong>Zabbix HA Failover:</strong> Site B node automatically becomes active</li>
-                <li><strong>Update DNS/VIP:</strong> Point agents and frontend to Site B</li>
+                <li><strong>Update DNS/Network:</strong> Point agents and users to Site B infrastructure</li>
+                <li><strong>Verify Monitoring:</strong> Confirm agents reconnect and data collection resumes</li>
             </ol>
-            <p><strong>Downtime:</strong> 10-30 minutes (manual process)</p>
-            <p><strong>Data Loss:</strong> Since last SnapMirror replication (e.g., up to 15 minutes)</p>
+            <p><strong>RTO (Downtime):</strong> ~4 hours (manual process, requires coordination)</p>
+            <p><strong>RPO (Data Loss):</strong> Up to 24 hours of monitoring data since last replication</p>
         </div>
 
         <h4>Advantages of This Approach:</h4>
@@ -1404,11 +1484,13 @@ NodeAddress=192.168.2.10:10051</code></pre>
 
         <h4>Limitations and Considerations:</h4>
         <ul>
-            <li><strong>Manual Failover:</strong> SVM-DR activation is a manual process</li>
-            <li><strong>Data Loss Window:</strong> RPO depends on replication schedule (not synchronous)</li>
-            <li><strong>Network Requirements:</strong> Adequate bandwidth between sites for replication</li>
-            <li><strong>Testing:</strong> Regular DR testing is essential but requires planned outage</li>
-            <li><strong>Failback:</strong> Returning to Site A requires re-establishing SVM relationship</li>
+            <li><strong>Manual Failover:</strong> SVM-DR activation is a manual process requiring ~4 hours</li>
+            <li><strong>Significant Data Loss Window:</strong> 24-hour RPO means losing up to a full day of monitoring data</li>
+            <li><strong>Not True HA:</strong> This is disaster recovery, not high availability</li>
+            <li><strong>Network Requirements:</strong> Adequate bandwidth between sites for daily replication</li>
+            <li><strong>Testing Complexity:</strong> DR testing requires planned outage and careful coordination</li>
+            <li><strong>Failback Complexity:</strong> Returning to Site A requires re-establishing SVM relationship and reverse replication</li>
+            <li><strong>Site B Not Active:</strong> Site B VM remains powered off, cannot serve as backup for queries or reports</li>
         </ul>
 
         <h3>5.5 Alternative: Dual Independent Zabbix Servers (Active-Active)</h3>
@@ -1516,6 +1598,7 @@ NodeAddress=192.168.2.10:10051</code></pre>
             </ul>
 
             <p><strong>Option 2: API-Based Configuration Sync</strong></p>
+            <p>Use Zabbix API to programmatically export from one server and import to another:</p>
             <pre><code># Example: Export config from Site A, import to Site B
 # Export templates
 curl -X POST https://zabbix-a.company.com/api_jsonrpc.php \
@@ -1524,6 +1607,13 @@ curl -X POST https://zabbix-a.company.com/api_jsonrpc.php \
 # Import to Site B
 curl -X POST https://zabbix-b.company.com/api_jsonrpc.php \
   -d '{"jsonrpc":"2.0","method":"configuration.import","params":{...}}'</code></pre>
+            <p><strong>Useful Resources:</strong></p>
+            <ul>
+                <li><strong>API Documentation:</strong> <a href="https://www.zabbix.com/documentation/current/en/manual/api/reference/configuration/export" target="_blank">configuration.export</a> and <a href="https://www.zabbix.com/documentation/current/en/manual/api/reference/configuration/import" target="_blank">configuration.import</a></li>
+                <li><strong>Official Python Library:</strong> <a href="https://github.com/zabbix/python-zabbix-utils" target="_blank">zabbix-utils</a> (recommended for automation)</li>
+                <li><strong>Example Script:</strong> <a href="https://github.com/lukecyca/pyzabbix/blob/master/examples/import_templates.py" target="_blank">import_templates.py</a></li>
+                <li><strong>Export/Import Tool:</strong> <a href="https://github.com/southbridgeio/zabbix-review-export-import" target="_blank">zabbix-review-export-import</a></li>
+            </ul>
 
             <p><strong>Option 3: Git-Based Configuration Management</strong></p>
             <ul>
@@ -1677,7 +1767,7 @@ ServerActive=192.168.1.10,192.168.2.10
             <ul>
                 <li>You already have VMware and NetApp infrastructure</li>
                 <li>Single source of truth for configuration is important</li>
-                <li>Acceptable RPO is 15-30 minutes</li>
+                <li>Acceptable RPO is covered by the SnapMirror schedule</li>
                 <li>Manual failover for site disasters is acceptable</li>
                 <li>Want to minimize resource usage</li>
             </ul>
@@ -1788,7 +1878,7 @@ DebugLevel=3              # 3 = warnings (increase to 4 for troubleshooting)
 LogSlowQueries=3000       # Log queries taking > 3 seconds</code></pre>
 
         <div class="warning">
-            <p><strong>Important:</strong> Setting <code>LogFileSize=0</code> means the built-in log rotation is disabled. You MUST configure logrotate to prevent disk space issues (see Section 7).</p>
+            <p><strong>Important:</strong> Setting <code>LogFileSize=0</code> means the built-in log rotation is disabled. You MUST configure logrotate to prevent disk space issues.</p>
         </div>
 
         <h3>6.5 Monitoring Server Health</h3>
@@ -1826,173 +1916,19 @@ systemctl restart zabbix-server
 systemctl status zabbix-server
 tail -f /var/log/zabbix/zabbix_server.log</code></pre>
 
-        <h3>6.7 Video Resources</h3>
+        <h3>6.7 Documentation Resources</h3>
         <ul>
             <li><strong>"Zabbix 7.0 Performance Tuning Best Practices":</strong> Search for Zabbix Summit 2024 presentations</li>
-            <li><strong>"Performance Tuning Documentation":</strong> <a href="https://www.zabbix.com/documentation/current/en/manual/appendix/performance_tuning" target="_blank">https://www.zabbix.com/documentation/current/en/manual/appendix/performance_tuning</a></li>
+            <li><strong>"Performance Tuning Guide":</strong> <a href="https://www.zabbix.com/documentation/current/en/manual/installation/requirements" target="_blank">https://www.zabbix.com/documentation/current/en/manual/installation/requirements</a> (see hardware requirements and sizing)</li>
             <li><strong>Server Configuration Reference:</strong> <a href="https://www.zabbix.com/documentation/current/en/manual/appendix/config/zabbix_server" target="_blank">https://www.zabbix.com/documentation/current/en/manual/appendix/config/zabbix_server</a></li>
             <li><strong>Zabbix 101 Course:</strong> Covers server configuration fundamentals</li>
         </ul>
 
         <hr>
 
-        <h2 id="section7">7. Log Management and Rotation</h2>
+        <h2 id="section7">7. Common Deployment Issues</h2>
 
-        <h3>7.1 Why Log Rotation Matters</h3>
-
-        <div class="error">
-            <h4>Without proper log rotation:</h4>
-            <ul>
-                <li>Log files grow indefinitely</li>
-                <li>Disk space fills up</li>
-                <li>Server stops functioning</li>
-                <li>Monitoring fails</li>
-                <li><strong>Critical outage occurs</strong></li>
-            </ul>
-        </div>
-
-        <div class="warning">
-            <p><strong>This is not optional.</strong> All production Zabbix deployments MUST have log rotation configured.</p>
-        </div>
-
-        <h3>7.2 Zabbix Logging Components</h3>
-
-        <h4>Files to Rotate:</h4>
-        <ul>
-            <li><code>/var/log/zabbix/zabbix_server.log</code> - Server logs</li>
-            <li><code>/var/log/zabbix/zabbix_agentd.log</code> - Agent logs (on each host)</li>
-            <li><code>/var/log/zabbix/zabbix_proxy.log</code> - Proxy logs (if used)</li>
-        </ul>
-
-        <h3>7.3 Configuring logrotate</h3>
-
-        <p><strong>Create/Edit:</strong> <code>/etc/logrotate.d/zabbix-server</code></p>
-
-        <h4>Recommended Configuration:</h4>
-        <pre><code>/var/log/zabbix/zabbix_server.log {
-    daily                    # Rotate daily
-    rotate 30                # Keep 30 days
-    compress                 # Compress old logs
-    delaycompress            # Delay compression by one rotation
-    missingok                # Don't error if file missing
-    notifempty               # Don't rotate empty logs
-    create 0640 zabbix zabbix # Create new file with these permissions
-    sharedscripts            # Run scripts once for all files
-    postrotate
-        # Reload server to close old log file
-        if [ -f /var/run/zabbix/zabbix_server.pid ]; then
-            /bin/kill -SIGHUP `cat /var/run/zabbix/zabbix_server.pid 2>/dev/null` 2>/dev/null || true
-        fi
-    endscript
-}</code></pre>
-
-        <h4>For Agents (<code>/etc/logrotate.d/zabbix-agent</code>):</h4>
-        <pre><code>/var/log/zabbix/zabbix_agentd.log {
-    weekly                   # Rotate weekly (agents generate less)
-    rotate 12                # Keep 12 weeks
-    compress
-    delaycompress
-    missingok
-    notifempty
-    create 0640 zabbix zabbix
-    postrotate
-        if [ -f /var/run/zabbix/zabbix_agentd.pid ]; then
-            /bin/kill -SIGHUP `cat /var/run/zabbix/zabbix_agentd.pid 2>/dev/null` 2>/dev/null || true
-        fi
-    endscript
-}</code></pre>
-
-        <h3>7.4 Alternative: copytruncate Method</h3>
-
-        <p>If you experience issues with log file handles, use <code>copytruncate</code>:</p>
-
-        <pre><code>/var/log/zabbix/zabbix_server.log {
-    daily
-    rotate 30
-    compress
-    delaycompress
-    missingok
-    notifempty
-    copytruncate             # Copy then truncate (no restart needed)
-}</code></pre>
-
-        <p><strong>Trade-off:</strong> Brief moment where some log entries might be lost during rotation.</p>
-
-        <h3>7.5 Testing Log Rotation</h3>
-
-        <h4>Test Configuration:</h4>
-        <pre><code># Dry run (shows what would happen)
-sudo logrotate -d /etc/logrotate.d/zabbix-server
-
-# Force rotation (actually rotate the file)
-sudo logrotate -f /etc/logrotate.d/zabbix-server
-
-# Verify rotation occurred
-ls -lh /var/log/zabbix/
-
-# Check that Zabbix is writing to new file
-sudo lsof | grep zabbix_server.log</code></pre>
-
-        <h3>7.6 Monitoring Disk Space</h3>
-
-        <h4>Set up monitoring for:</h4>
-        <ul>
-            <li><code>/var/log</code> partition usage</li>
-            <li>Zabbix log file sizes</li>
-            <li>Rotation success/failure</li>
-        </ul>
-
-        <h4>Alert thresholds:</h4>
-        <ul>
-            <li>Warning at 80% disk usage</li>
-            <li>Critical at 90% disk usage</li>
-            <li>Alert if log file > 500MB (indicates rotation failure)</li>
-        </ul>
-
-        <h3>7.7 Common Mistakes</h3>
-
-        <div class="error">
-            <h4>❌ No log rotation configured</h4>
-            <ul>
-                <li>Most critical mistake</li>
-                <li>Will eventually cause outage</li>
-                <li>Often discovered during failure</li>
-            </ul>
-
-            <h4>❌ LogFileSize > 0 in zabbix_server.conf</h4>
-            <ul>
-                <li>Built-in rotation conflicts with logrotate</li>
-                <li>Can cause issues</li>
-                <li><strong>Best practice:</strong> Set to 0, use logrotate</li>
-            </ul>
-
-            <h4>❌ Incorrect permissions in logrotate config</h4>
-            <ul>
-                <li>New files created with wrong ownership</li>
-                <li>Zabbix can't write to log</li>
-                <li>Server fails to start</li>
-            </ul>
-
-            <h4>❌ No testing after configuration</h4>
-            <ul>
-                <li>Rotation fails silently</li>
-                <li>Discovered when disk fills</li>
-                <li>Always test rotation manually</li>
-            </ul>
-        </div>
-
-        <h3>7.8 Video and Documentation Resources</h3>
-        <ul>
-            <li><strong>"How to Manage Log Files Using Logrotate":</strong> <a href="https://www.datadoghq.com/blog/log-file-control-with-logrotate/" target="_blank">https://www.datadoghq.com/blog/log-file-control-with-logrotate/</a></li>
-            <li><strong>"Setup and Manage Log Rotation in Linux":</strong> <a href="https://www.tecmint.com/install-logrotate-to-manage-log-rotation-in-linux/" target="_blank">https://www.tecmint.com/install-logrotate-to-manage-log-rotation-in-linux/</a></li>
-            <li><strong>Better Stack Logrotate Guide:</strong> <a href="https://betterstack.com/community/guides/logging/how-to-manage-log-files-with-logrotate-on-ubuntu-20-04/" target="_blank">https://betterstack.com/community/guides/logging/how-to-manage-log-files-with-logrotate...</a></li>
-        </ul>
-
-        <hr>
-
-        <h2 id="section8">8. Common Deployment Issues</h2>
-
-        <h3>8.1 Issue: Inconsistent Agent Configuration Files</h3>
+        <h3>7.1 Issue: Inconsistent Agent Configuration Files</h3>
 
         <h4>Symptoms:</h4>
         <ul>
@@ -2028,7 +1964,7 @@ grep -E "^[A-Z].*=$" /etc/zabbix/zabbix_agentd.conf</code></pre>
             <li>Test agent connection after any change</li>
         </ol>
 
-        <h3>8.2 Issue: Wrong Agent Type Configured</h3>
+        <h3>7.2 Issue: Wrong Agent Type Configured</h3>
 
         <h4>Symptoms:</h4>
         <ul>
@@ -2083,7 +2019,7 @@ ListenIP=0.0.0.0
 ListenPort=10050
 Hostname=server01.example.com.au</code></pre>
 
-        <h3>8.3 Issue: Unnecessary Proxies Deployed</h3>
+        <h3>7.3 Issue: Unnecessary Proxies Deployed</h3>
 
         <h4>Symptoms:</h4>
         <ul>
@@ -2144,7 +2080,7 @@ Update agent configs to point to server</code></pre>
             </li>
         </ol>
 
-        <h3>8.4 Issue: Unreliable HA Implementation</h3>
+        <h3>7.4 Issue: Unreliable HA Implementation</h3>
 
         <h4>Symptoms:</h4>
         <ul>
@@ -2152,55 +2088,94 @@ Update agent configs to point to server</code></pre>
             <li>Database becomes inconsistent</li>
             <li>Split-brain scenarios</li>
             <li>Monitoring unavailable during failures</li>
+            <li>Native Zabbix HA nodes fail when database is unavailable</li>
         </ul>
 
         <h4>Root Cause:</h4>
         <ul>
-            <li>Complex HA setup without expertise</li>
-            <li>Missing witness node for quorum</li>
-            <li>Two-node PostgreSQL cluster without proper coordination</li>
-            <li>Over-engineered solution</li>
+            <li>Misunderstanding that Native Zabbix HA provides complete HA (it only handles Zabbix process failover)</li>
+            <li>Complex database HA setup without expertise</li>
+            <li>Missing witness node for database quorum</li>
+            <li>Two-node database cluster without proper coordination (split-brain risk)</li>
+            <li>Attempting cross-site HA without third location for witness</li>
+            <li>Over-engineered solution beyond team capabilities</li>
         </ul>
 
         <h4>Detection:</h4>
         <ul>
-            <li>Test failover procedures</li>
-            <li>Review cluster configuration</li>
-            <li>Check for witness/arbiter nodes</li>
-            <li>Verify quorum mechanism</li>
+            <li>Test failover procedures (database AND Zabbix server)</li>
+            <li>Review cluster configuration for both database and Zabbix HA</li>
+            <li>Check for witness/arbiter nodes (critical for 2-site setups)</li>
+            <li>Verify quorum mechanism exists</li>
+            <li>Test what happens when database site fails</li>
         </ul>
+
+        <h4>Critical Understanding:</h4>
+        <div class="warning">
+            <p><strong>Native Zabbix HA ≠ Complete HA</strong></p>
+            <ul>
+                <li>Native HA only handles Zabbix server <em>process</em> failover (~5 seconds)</li>
+                <li>Database is still a single point of failure</li>
+                <li>If database goes down, both Zabbix HA nodes fail</li>
+                <li>True site redundancy requires database clustering (very complex)</li>
+                <li>Database clustering requires third site for witness node</li>
+            </ul>
+        </div>
 
         <h4>Resolution Options:</h4>
 
         <div class="success">
-            <h4>Option A: Simplify to Native HA</h4>
+            <h4>Option A: Dual Independent Zabbix Servers (Recommended)</h4>
+            <p>Deploy two completely independent Zabbix instances (see Section 5.5):</p>
             <ol>
-                <li>Deploy two self-contained Zabbix servers</li>
-                <li>Each with dedicated PostgreSQL instance</li>
-                <li>Use Zabbix native HA for coordination</li>
-                <li>Rely on backups/snapshots for recovery</li>
-                <li>Accept brief outage during maintenance</li>
+                <li>Site A: Complete stack (Frontend + Server + Database)</li>
+                <li>Site B: Complete stack (Frontend + Server + Database)</li>
+                <li>No shared components between sites</li>
+                <li>Both actively monitor same infrastructure</li>
+                <li>Manage configuration synchronization (manual or scripted)</li>
+                <li><strong>Advantages:</strong> Maximum redundancy, survives complete site loss, zero RPO, simple to understand</li>
+                <li><strong>Trade-offs:</strong> Double resources, configuration drift risk, duplicate alerting</li>
             </ol>
 
-            <h4>Option B: Properly Implement PostgreSQL HA</h4>
+            <h4>Option B: VMware HA + NetApp SVM-DR (Inherited Infrastructure)</h4>
+            <p>Leverage existing infrastructure for DR (see Section 5.4):</p>
             <ol>
-                <li>Add witness node for quorum (3-node setup)</li>
-                <li>Implement pg_auto_failover or Patroni</li>
+                <li>Site A: Active Zabbix with database on NetApp SVM</li>
+                <li>Site B: Replica VM (powered off) with replicated NetApp SVM</li>
+                <li>VMware HA protects within each site</li>
+                <li>NetApp SVM-DR replicates storage between sites</li>
+                <li>Manual failover procedure for site disasters</li>
+                <li><strong>Advantages:</strong> Uses existing infrastructure, simpler than database clustering</li>
+                <li><strong>Trade-offs:</strong> RPO ~24 hours, RTO ~4 hours, manual failover, this is DR not HA</li>
+            </ol>
+
+            <h4>Option C: Properly Implement Database Clustering (Complex)</h4>
+            <p><strong>Warning:</strong> Only pursue if you have database expertise and a third site:</p>
+            <ol>
+                <li>Requires third site/location for witness node (cannot do 2-site properly)</li>
+                <li>Implement pg_auto_failover or Patroni with witness</li>
                 <li>Use HAProxy for connection routing</li>
-                <li>Ensure proper testing of failover</li>
-                <li>Document recovery procedures</li>
+                <li>Combine with Native Zabbix HA for Zabbix process failover</li>
+                <li>Extensive testing of all failover scenarios</li>
+                <li>Document complex recovery procedures</li>
+                <li><strong>Reality check:</strong> Very complex, requires PostgreSQL expertise, needs third location</li>
             </ol>
 
-            <h4>Option C: Use Existing Infrastructure</h4>
+            <h4>Option D: Accept Simpler Reality (Often Best)</h4>
             <ol>
-                <li>Leverage NetApp SnapMirror</li>
-                <li>VMware HA/DRS for VM failover</li>
-                <li>Regular backups and tested recovery</li>
-                <li>Simpler operational model</li>
+                <li>Single Zabbix server with VMware HA (protects against hardware failure)</li>
+                <li>Regular database backups and tested recovery</li>
+                <li>Accept brief outage for patching/maintenance</li>
+                <li>Much simpler operational model</li>
+                <li><strong>Reality:</strong> For most environments, monitoring downtime is acceptable</li>
             </ol>
         </div>
 
-        <h3>8.5 Issue: Server Configuration Not Tuned</h3>
+        <div class="info">
+            <p><strong>Key Takeaway:</strong> Refer to Section 5 "High Availability Architectures" for detailed analysis of each approach. The "simple" Native Zabbix HA only solves part of the problem - the database remains the critical dependency.</p>
+        </div>
+
+        <h3>7.5 Issue: Server Configuration Not Tuned</h3>
 
         <h4>Symptoms:</h4>
         <ul>
@@ -2236,7 +2211,7 @@ grep -i "warn\|error" /var/log/zabbix/zabbix_server.log</code></pre>
             <li><strong>Document final tuned configuration</strong></li>
         </ol>
 
-        <h3>8.6 Issue: Logs Fill Disk</h3>
+        <h3>7.6 Issue: Logs Fill Disk</h3>
 
         <h4>Symptoms:</h4>
         <ul>
@@ -2270,9 +2245,9 @@ sudo systemctl restart zabbix-server
 
         <hr>
 
-        <h2 id="section9">9. Maintenance Best Practices</h2>
+        <h2 id="section8">8. Maintenance Best Practices</h2>
 
-        <h3>9.1 Regular Maintenance Tasks</h3>
+        <h3>8.1 Regular Maintenance Tasks</h3>
 
         <h4>Daily:</h4>
         <ul>
@@ -2307,7 +2282,7 @@ sudo systemctl restart zabbix-server
             <li>Security updates and patches</li>
         </ul>
 
-        <h3>9.2 Backup Strategy</h3>
+        <h3>8.2 Backup Strategy</h3>
 
         <h4>Critical Items to Back Up:</h4>
         <ul>
@@ -2337,7 +2312,7 @@ sudo systemctl restart zabbix-server
             <li>Rapid recovery capability</li>
         </ul>
 
-        <h3>9.3 Change Management</h3>
+        <h3>8.3 Change Management</h3>
 
         <h4>Before Making Changes:</h4>
         <ol>
@@ -2356,7 +2331,7 @@ sudo systemctl restart zabbix-server
             <li>Review lessons learned</li>
         </ol>
 
-        <h3>9.4 Documentation Requirements</h3>
+        <h3>8.4 Documentation Requirements</h3>
 
         <h4>Maintain Current Documentation for:</h4>
         <ul>
@@ -2369,7 +2344,7 @@ sudo systemctl restart zabbix-server
             <li>Known issues and workarounds</li>
         </ul>
 
-        <h3>9.5 Skill Development</h3>
+        <h3>8.5 Skill Development</h3>
 
         <h4>Recommended Training Path:</h4>
         <ol>
@@ -2383,9 +2358,9 @@ sudo systemctl restart zabbix-server
 
         <hr>
 
-        <h2 id="section10">10. Additional Resources</h2>
+        <h2 id="section9">9. Additional Resources</h2>
 
-        <h3>10.1 Official Resources</h3>
+        <h3>9.1 Official Resources</h3>
 
         <h4>Documentation:</h4>
         <ul>
@@ -2409,7 +2384,7 @@ sudo systemctl restart zabbix-server
             <li><strong>GitHub:</strong> <a href="https://github.com/zabbix/" target="_blank">https://github.com/zabbix/</a></li>
         </ul>
 
-        <h3>10.2 Video Learning Resources</h3>
+        <h3>9.2 Video Learning Resources</h3>
 
         <h4>YouTube Channels:</h4>
         <ul>
@@ -2433,14 +2408,14 @@ sudo systemctl restart zabbix-server
             <li>Problem detection and alerting</li>
         </ul>
 
-        <h3>10.3 Books and Guides</h3>
+        <h3>9.3 Books and Guides</h3>
         <ul>
             <li><strong>"The Zabbix Book":</strong> <a href="https://thezabbixbook.com/" target="_blank">https://thezabbixbook.com/</a></li>
             <li>"Zabbix Cookbook" by Patrik Uytterhoeven</li>
             <li>"Zabbix 4 Network Monitoring" by Patrik Uytterhoeven</li>
         </ul>
 
-        <h3>10.4 Third-Party Tools and Integrations</h3>
+        <h3>9.4 Third-Party Tools and Integrations</h3>
 
         <h4>Useful Additions:</h4>
         <ul>
@@ -2450,7 +2425,7 @@ sudo systemctl restart zabbix-server
             <li>Custom scripts repository</li>
         </ul>
 
-        <h3>10.5 Getting Help</h3>
+        <h3>9.5 Getting Help</h3>
 
         <h4>When You Need Assistance:</h4>
         <ol>
@@ -2470,68 +2445,7 @@ sudo systemctl restart zabbix-server
 
         <hr>
 
-        <h2>Appendix A: Quick Reference Checklist</h2>
-
-        <h3>Agent Deployment Checklist</h3>
-
-        <div class="checklist">
-            <ul>
-                <li>Determine if passive or active agent is appropriate</li>
-                <li><strong>Consider Windows Event Log overhead if using active</strong></li>
-                <li>Install correct agent package</li>
-                <li>Configure agent with proper syntax</li>
-                <li>Verify Server/ServerActive parameter</li>
-                <li>Set correct Hostname parameter</li>
-                <li>Test agent configuration (<code>zabbix_agentd -t</code>)</li>
-                <li>Start agent service</li>
-                <li>Verify connectivity from server</li>
-                <li>Add host in frontend</li>
-                <li>Link appropriate templates</li>
-                <li>Verify data collection</li>
-                <li><strong>Monitor agent memory usage (especially Windows)</strong></li>
-            </ul>
-        </div>
-
-        <h3>Server Deployment Checklist</h3>
-
-        <div class="checklist">
-            <ul>
-                <li>Size server hardware appropriately</li>
-                <li>Install PostgreSQL/MySQL</li>
-                <li>Create Zabbix database</li>
-                <li>Install Zabbix server package</li>
-                <li>Configure database connection</li>
-                <li>Tune cache sizes</li>
-                <li>Configure process counts</li>
-                <li>Set up logging</li>
-                <li><strong>Configure logrotate</strong></li>
-                <li>Test server startup</li>
-                <li>Install and configure frontend</li>
-                <li>Set up monitoring of Zabbix itself</li>
-                <li>Configure backups</li>
-                <li>Document configuration</li>
-            </ul>
-        </div>
-
-        <h3>HA Deployment Checklist</h3>
-
-        <div class="checklist">
-            <ul>
-                <li>Determine if HA is truly needed</li>
-                <li>Choose appropriate HA method</li>
-                <li>Deploy multiple server nodes</li>
-                <li>Configure HANodeName and NodeAddress</li>
-                <li>Test failover procedures</li>
-                <li>Implement database redundancy</li>
-                <li>Set up monitoring and alerts</li>
-                <li>Document recovery procedures</li>
-                <li>Train staff on failover process</li>
-            </ul>
-        </div>
-
-        <hr>
-
-        <h2>Appendix B: Glossary</h2>
+        <h2>Appendix: Glossary</h2>
 
         <table>
             <tr>
@@ -2594,13 +2508,13 @@ sudo systemctl restart zabbix-server
             <tr>
                 <td>1.0</td>
                 <td>October 2025</td>
-                <td>Infrastructure Team</td>
+                <td>Chris Fryer</td>
                 <td>Initial training document</td>
             </tr>
             <tr>
                 <td>1.1</td>
                 <td>October 2025</td>
-                <td>Infrastructure Team</td>
+                <td>Chris Fryer</td>
                 <td>Added SVG diagrams, expanded active agent overhead warnings, replaced paid training references with free Zabbix 101 course</td>
             </tr>
         </table>
@@ -2609,8 +2523,10 @@ sudo systemctl restart zabbix-server
 
         <div class="info" style="margin-top: 40px;">
             <h3>Questions or Feedback?</h3>
-            <p>This document is intended as a living training resource. If you identify errors, have suggestions for improvement, or need clarification on any topics, please contact the Infrastructure Team.</p>
-            
+            <p>This document is intended as a living training resource. If you identify errors, have suggestions for improvement, or need clarification on any topics, please contact Chris Fryer.</p>
+
+            <p><strong>Source:</strong> This document is maintained on GitHub at <a href="https://github.com/ChrisFryer/zabbix_training" target="_blank">https://github.com/ChrisFryer/zabbix_training</a></p>
+
             <p><strong>Remember:</strong> The best monitoring solution is one that is simple, reliable, and well understood by the team responsible for maintaining it. When in doubt, choose simplicity and proven approaches over complex or novel architectures.</p>
         </div>
 
