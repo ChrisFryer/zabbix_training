@@ -1956,7 +1956,7 @@ grep -E "^[A-Z].*=$" /etc/zabbix/zabbix_agentd.conf</code></pre>
             <li>Test agent connection after any change</li>
         </ol>
 
-        <h3>8.2 Issue: Wrong Agent Type Configured</h3>
+        <h3>7.2 Issue: Wrong Agent Type Configured</h3>
 
         <h4>Symptoms:</h4>
         <ul>
@@ -2011,7 +2011,7 @@ ListenIP=0.0.0.0
 ListenPort=10050
 Hostname=server01.example.com.au</code></pre>
 
-        <h3>8.3 Issue: Unnecessary Proxies Deployed</h3>
+        <h3>7.3 Issue: Unnecessary Proxies Deployed</h3>
 
         <h4>Symptoms:</h4>
         <ul>
@@ -2072,7 +2072,7 @@ Update agent configs to point to server</code></pre>
             </li>
         </ol>
 
-        <h3>8.4 Issue: Unreliable HA Implementation</h3>
+        <h3>7.4 Issue: Unreliable HA Implementation</h3>
 
         <h4>Symptoms:</h4>
         <ul>
@@ -2128,7 +2128,7 @@ Update agent configs to point to server</code></pre>
             </ol>
         </div>
 
-        <h3>8.5 Issue: Server Configuration Not Tuned</h3>
+        <h3>7.5 Issue: Server Configuration Not Tuned</h3>
 
         <h4>Symptoms:</h4>
         <ul>
@@ -2164,7 +2164,7 @@ grep -i "warn\|error" /var/log/zabbix/zabbix_server.log</code></pre>
             <li><strong>Document final tuned configuration</strong></li>
         </ol>
 
-        <h3>8.6 Issue: Logs Fill Disk</h3>
+        <h3>7.6 Issue: Logs Fill Disk</h3>
 
         <h4>Symptoms:</h4>
         <ul>
@@ -2461,20 +2461,14 @@ sudo systemctl restart zabbix-server
             <tr>
                 <td>1.0</td>
                 <td>October 2025</td>
-                <td>Chris Fryer</td>
+                <td>Infrastructure Team</td>
                 <td>Initial training document</td>
             </tr>
             <tr>
                 <td>1.1</td>
                 <td>October 2025</td>
-                <td>Chris Fryer</td>
+                <td>Infrastructure Team</td>
                 <td>Added SVG diagrams, expanded active agent overhead warnings, replaced paid training references with free Zabbix 101 course</td>
-            </tr>
-            <tr>
-                <td>1.2</td>
-                <td>October 2025</td>
-                <td>Chris Fryer</td>
-                <td>Added comprehensive HA scenarios (VMware HA + NetApp SVM-DR, Dual Independent Servers), clarified Native HA limitations, removed log management section</td>
             </tr>
         </table>
 
@@ -2482,8 +2476,8 @@ sudo systemctl restart zabbix-server
 
         <div class="info" style="margin-top: 40px;">
             <h3>Questions or Feedback?</h3>
-            <p>This document is intended as a living training resource. If you identify errors, have suggestions for improvement, or need clarification on any topics, please contact Chris Fryer.</p>
-
+            <p>This document is intended as a living training resource. If you identify errors, have suggestions for improvement, or need clarification on any topics, please contact the Infrastructure Team.</p>
+            
             <p><strong>Remember:</strong> The best monitoring solution is one that is simple, reliable, and well understood by the team responsible for maintaining it. When in doubt, choose simplicity and proven approaches over complex or novel architectures.</p>
         </div>
 
