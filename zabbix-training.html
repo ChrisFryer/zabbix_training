@@ -1,0 +1,2496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zabbix Deployment & Operations Training Guide</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #1976d2;
+            border-bottom: 3px solid #1976d2;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #0d47a1;
+            margin-top: 40px;
+            border-left: 4px solid #1976d2;
+            padding-left: 15px;
+        }
+        h3 {
+            color: #1565c0;
+            margin-top: 30px;
+        }
+        h4 {
+            color: #1976d2;
+            margin-top: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .metadata {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+        }
+        .metadata p {
+            margin: 5px 0;
+        }
+        .summary {
+            background: #f1f8e9;
+            padding: 20px;
+            border-left: 4px solid #558b2f;
+            margin: 20px 0;
+        }
+        .warning {
+            background: #fff3e0;
+            border-left: 4px solid #f57c00;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .success {
+            background: #f1f8e9;
+            border-left: 4px solid #558b2f;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .error {
+            background: #ffebee;
+            border-left: 4px solid #d32f2f;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .info {
+            background: #e3f2fd;
+            border-left: 4px solid #1976d2;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        pre {
+            background: #263238;
+            color: #aed581;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        pre code {
+            background: transparent;
+            padding: 0;
+        }
+        .svg-container {
+            text-align: center;
+            margin: 30px 0;
+            padding: 20px;
+            background: #fafafa;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+        }
+        .svg-container svg {
+            max-width: 100%;
+            height: auto;
+        }
+        ul, ol {
+            margin: 10px 0;
+            padding-left: 30px;
+        }
+        li {
+            margin: 8px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background: #1976d2;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        .toc {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .toc ul {
+            list-style-type: none;
+        }
+        .toc li {
+            margin: 8px 0;
+        }
+        .toc a {
+            color: #1976d2;
+            text-decoration: none;
+        }
+        .toc a:hover {
+            text-decoration: underline;
+        }
+        .checklist {
+            background: #fff;
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .checklist li {
+            list-style-type: none;
+        }
+        .checklist li:before {
+            content: "☐ ";
+            margin-right: 5px;
+            color: #1976d2;
+            font-size: 16px;
+        }
+        a {
+            color: #1976d2;
+        }
+        a:hover {
+            color: #0d47a1;
+        }
+        @media print {
+            body {
+                background: white;
+            }
+            .container {
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Zabbix Deployment & Operations Training Guide</h1>
+            <h2 style="border:none;">For Critical Infrastructure Monitoring</h2>
+        </div>
+
+        <div class="metadata">
+            <p><strong>Prepared for:</strong> Atturra BAU Operations Team</p>
+            <p><strong>Version:</strong> 1.1</p>
+            <p><strong>Date:</strong> October 2025</p>
+            <p><strong>Target Audience:</strong> BAU staff responsible for monitoring infrastructure</p>
+        </div>
+
+        <div class="summary">
+            <h2 style="margin-top:0; border:none;">Executive Summary</h2>
+            <p>This training document provides comprehensive guidance on deploying, configuring, and maintaining Zabbix monitoring infrastructure for critical environments. The material covers fundamental concepts, architectural best practices, and operational procedures to ensure reliable, scalable, and maintainable monitoring solutions.</p>
+            
+            <h4>Key Learning Objectives:</h4>
+            <ul>
+                <li>Understand Zabbix architecture and component interactions</li>
+                <li>Recognise appropriate use cases for Zabbix components (proxies, agent types)</li>
+                <li>Configure agents, servers, and high availability properly</li>
+                <li>Maintain log files and system health</li>
+                <li>Identify and correct common deployment issues</li>
+            </ul>
+        </div>
+
+        <div class="toc">
+            <h2 style="border:none; margin-top:0;">Table of Contents</h2>
+            <ul>
+                <li><a href="#section1">1. Introduction to Zabbix</a></li>
+                <li><a href="#section2">2. Zabbix Architecture Fundamentals</a></li>
+                <li><a href="#section3">3. Agent Configuration: Passive vs Active</a></li>
+                <li><a href="#section4">4. When to Use Zabbix Proxies</a></li>
+                <li><a href="#section5">5. High Availability Architectures</a></li>
+                <li><a href="#section6">6. Zabbix Server Configuration</a></li>
+                <li><a href="#section7">7. Common Deployment Issues</a></li>
+                <li><a href="#section8">8. Maintenance Best Practices</a></li>
+                <li><a href="#section9">9. Additional Resources</a></li>
+            </ul>
+        </div>
+
+        <hr>
+
+        <h2 id="section1">1. Introduction to Zabbix</h2>
+
+        <h3>1.1 What is Zabbix?</h3>
+        <p>Zabbix is an enterprise-class open-source monitoring solution designed to monitor networks, servers, virtual machines, applications, and cloud infrastructure. It provides real-time monitoring of thousands of metrics, sophisticated alerting capabilities, and comprehensive visualisation tools.</p>
+
+        <h4>Core Capabilities:</h4>
+        <ul>
+            <li>Network performance monitoring</li>
+            <li>Application and service monitoring</li>
+            <li>Infrastructure health checks</li>
+            <li>Alert notifications and escalations</li>
+            <li>Historical data analysis and trending</li>
+            <li>Distributed monitoring across multiple sites</li>
+        </ul>
+
+        <h3>1.2 Recommended Free Training Course</h3>
+        
+        <div class="success">
+            <h4>🎓 START HERE: Zabbix 101: Introduction to Open-Source Monitoring</h4>
+            <p>This is the <strong>official free course</strong> from Zabbix and provides the perfect foundation for anyone new to Zabbix or seeking to refresh their knowledge.</p>
+            
+            <p><strong>Course URL:</strong> <a href="https://academy.zabbix.com/courses/zabbix-101" target="_blank">https://academy.zabbix.com/courses/zabbix-101</a></p>
+            
+            <h4>What You'll Learn:</h4>
+            <ul>
+                <li>Zabbix fundamentals and architecture</li>
+                <li>Installation and initial configuration</li>
+                <li>Host and template management</li>
+                <li>Creating items, triggers, and dashboards</li>
+                <li>Network discovery and auto-registration</li>
+                <li>Best practices for production deployments</li>
+            </ul>
+            
+            <p><strong>Time Commitment:</strong> Approximately 2 hours of self-paced learning</p>
+            
+            <h4>Why This Course:</h4>
+            <ul>
+                <li>Free enrolment with Zabbix Academy</li>
+                <li>Created by official Zabbix trainers</li>
+                <li>Hands-on labs included</li>
+                <li>Certificate of completion available</li>
+                <li>Up-to-date with current Zabbix versions</li>
+                <li>Covers real-world scenarios</li>
+            </ul>
+            
+            <p><strong>Action Item:</strong> All BAU staff should complete this course before working with production Zabbix systems.</p>
+        </div>
+
+        <h3>1.3 Additional Video Resources</h3>
+        
+        <h4>Official Zabbix YouTube Channel:</h4>
+        <ul>
+            <li><strong>URL:</strong> <a href="https://www.youtube.com/c/Zabbix" target="_blank">https://www.youtube.com/c/Zabbix</a></li>
+            <li><strong>Playlists:</strong> "Zabbix Handy Tips", "Zabbix Webinars", "Zabbix Summit"</li>
+            <li><strong>Recommended Videos:</strong>
+                <ul>
+                    <li>"Zabbix in 5 Minutes" - Quick overview</li>
+                    <li>"Handy Tips #15: Deploying Zabbix Passive and Active Agents"</li>
+                    <li>"Zabbix Email Notifications and Actions"</li>
+                    <li>Zabbix Summit presentations on architecture and best practices</li>
+                </ul>
+            </li>
+        </ul>
+
+        <h4>Free Zabbix Webinars:</h4>
+        <ul>
+            <li><strong>URL:</strong> <a href="https://www.zabbix.com/webinars" target="_blank">https://www.zabbix.com/webinars</a></li>
+            <li>Regular sessions covering new features and use cases</li>
+            <li>Available in multiple languages</li>
+            <li>On-demand viewing of past webinars</li>
+        </ul>
+
+        <h3>1.4 Official Documentation</h3>
+        <ul>
+            <li><strong>Zabbix 7.x Documentation:</strong> <a href="https://www.zabbix.com/documentation/current/en/manual" target="_blank">https://www.zabbix.com/documentation/current/en/manual</a></li>
+            <li><strong>Configuration Best Practices:</strong> <a href="https://www.zabbix.com/documentation/current/en/manual/best_practices/configuration" target="_blank">https://www.zabbix.com/documentation/current/en/manual/best_practices/configuration</a></li>
+            <li><strong>Community Forums:</strong> <a href="https://www.zabbix.com/forum/" target="_blank">https://www.zabbix.com/forum/</a></li>
+        </ul>
+
+        <hr>
+
+        <h2 id="section2">2. Zabbix Architecture Fundamentals</h2>
+
+        <h3>2.1 Core Components</h3>
+        <p>A typical Zabbix deployment consists of:</p>
+
+        <h4>Zabbix Server</h4>
+        <ul>
+            <li>Central component that processes data</li>
+            <li>Performs trigger calculations</li>
+            <li>Sends notifications</li>
+            <li>Stores configuration and historical data</li>
+            <li><strong>Critical Point:</strong> The server should be the brains of your monitoring, not just a data collector</li>
+        </ul>
+
+        <h4>Zabbix Database</h4>
+        <ul>
+            <li>PostgreSQL, MySQL/MariaDB, or Oracle</li>
+            <li>Stores all configuration and collected metrics</li>
+            <li>Performance-critical component requiring proper tuning</li>
+            <li>Should be sized appropriately for data retention requirements</li>
+        </ul>
+
+        <h4>Zabbix Frontend (Web Interface)</h4>
+        <ul>
+            <li>PHP-based web interface</li>
+            <li>Configuration and visualisation</li>
+            <li>Can be separated from the server for scalability</li>
+            <li>Multiple frontends can connect to the same server</li>
+        </ul>
+
+        <h4>Zabbix Agents</h4>
+        <ul>
+            <li>Lightweight processes running on monitored hosts</li>
+            <li>Collect local metrics (CPU, memory, disk, processes)</li>
+            <li>Two types: Passive (polled) and Active (push)</li>
+            <li>Agent 2 available with improved performance</li>
+        </ul>
+
+        <h4>Zabbix Proxies (Optional)</h4>
+        <ul>
+            <li>Intermediate collectors between agents and server</li>
+            <li><strong>Only needed in specific scenarios</strong> (see Section 4)</li>
+            <li>Add complexity and additional databases</li>
+            <li>Should not be deployed without clear justification</li>
+        </ul>
+
+        <h3>2.2 Recommended Architecture for Single Data Centre</h3>
+        <p>For environments where all infrastructure is within the same data centre or well-connected network:</p>
+
+        <div class="svg-container">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500">
+              <text x="400" y="30" text-anchor="middle" font-size="18" font-weight="bold" fill="#333">
+                Simple Single Data Centre Architecture
+              </text>
+              
+              <rect x="50" y="60" width="700" height="200" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+              <text x="400" y="85" text-anchor="middle" font-size="14" font-weight="bold" fill="#1976d2">
+                Monitored Infrastructure
+              </text>
+              
+              <g id="agent1">
+                <rect x="100" y="110" width="120" height="80" fill="#fff" stroke="#424242" stroke-width="2" rx="5"/>
+                <text x="160" y="140" text-anchor="middle" font-size="12" font-weight="bold">Agent</text>
+                <text x="160" y="160" text-anchor="middle" font-size="10">(Passive)</text>
+                <text x="160" y="175" text-anchor="middle" font-size="9" fill="#666">Port 10050</text>
+              </g>
+              
+              <g id="agent2">
+                <rect x="250" y="110" width="120" height="80" fill="#fff" stroke="#424242" stroke-width="2" rx="5"/>
+                <text x="310" y="140" text-anchor="middle" font-size="12" font-weight="bold">Agent</text>
+                <text x="310" y="160" text-anchor="middle" font-size="10">(Passive)</text>
+                <text x="310" y="175" text-anchor="middle" font-size="9" fill="#666">Port 10050</text>
+              </g>
+              
+              <g id="agent3">
+                <rect x="400" y="110" width="120" height="80" fill="#fff" stroke="#424242" stroke-width="2" rx="5"/>
+                <text x="460" y="140" text-anchor="middle" font-size="12" font-weight="bold">Agent</text>
+                <text x="460" y="160" text-anchor="middle" font-size="10">(Passive)</text>
+                <text x="460" y="175" text-anchor="middle" font-size="9" fill="#666">Port 10050</text>
+              </g>
+              
+              <g id="agent4">
+                <rect x="550" y="110" width="120" height="80" fill="#fff" stroke="#424242" stroke-width="2" rx="5"/>
+                <text x="610" y="140" text-anchor="middle" font-size="12" font-weight="bold">Agent</text>
+                <text x="610" y="160" text-anchor="middle" font-size="10">(Passive)</text>
+                <text x="610" y="175" text-anchor="middle" font-size="9" fill="#666">Port 10050</text>
+              </g>
+              
+              <path d="M 160 190 L 160 220 L 400 220 L 400 290" stroke="#4caf50" stroke-width="2" fill="none" marker-end="url(#arrowgreen)"/>
+              <path d="M 310 190 L 310 220 L 400 220 L 400 290" stroke="#4caf50" stroke-width="2" fill="none" marker-end="url(#arrowgreen)"/>
+              <path d="M 460 190 L 460 240 L 400 240 L 400 290" stroke="#4caf50" stroke-width="2" fill="none" marker-end="url(#arrowgreen)"/>
+              <path d="M 610 190 L 610 240 L 400 240 L 400 290" stroke="#4caf50" stroke-width="2" fill="none" marker-end="url(#arrowgreen)"/>
+              
+              <text x="200" y="210" font-size="10" fill="#2e7d32" font-style="italic">Server polls agents</text>
+              
+              <rect x="250" y="300" width="300" height="150" fill="#fff3e0" stroke="#f57c00" stroke-width="3" rx="5"/>
+              <text x="400" y="325" text-anchor="middle" font-size="14" font-weight="bold" fill="#e65100">
+                Zabbix Server
+              </text>
+              <text x="400" y="345" text-anchor="middle" font-size="11" fill="#666">
+                (Self-Contained)
+              </text>
+              
+              <rect x="280" y="360" width="240" height="70" fill="#fff" stroke="#1976d2" stroke-width="2" rx="3"/>
+              <text x="400" y="385" text-anchor="middle" font-size="12" font-weight="bold">PostgreSQL Database</text>
+              <text x="400" y="405" text-anchor="middle" font-size="10" fill="#666">Configuration + Metrics</text>
+              <text x="400" y="420" text-anchor="middle" font-size="9" fill="#666">Port 5432</text>
+              
+              <defs>
+                <marker id="arrowgreen" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                  <path d="M0,0 L0,6 L9,3 z" fill="#4caf50"/>
+                </marker>
+              </defs>
+              
+              <text x="50" y="480" font-size="11" fill="#666" font-weight="bold">Key Benefits:</text>
+              <text x="50" y="495" font-size="10" fill="#666">• Simple architecture - easy to understand and maintain</text>
+              <text x="350" y="495" font-size="10" fill="#666">• Direct monitoring - no intermediate components</text>
+            </svg>
+        </div>
+
+        <div class="success">
+            <p><strong>Key Principle:</strong> Simplicity is paramount in critical infrastructure. Avoid unnecessary complexity.</p>
+        </div>
+
+        <h3>2.3 Video Resources</h3>
+        <ul>
+            <li><strong>"Zabbix Architecture Overview":</strong> Available on official Zabbix YouTube channel</li>
+            <li><strong>Official Zabbix Blog:</strong> <a href="https://blog.zabbix.com/" target="_blank">https://blog.zabbix.com/</a> - Architecture articles and case studies</li>
+            <li><strong>Zabbix 101 Course:</strong> Covers architecture fundamentals with visual diagrams</li>
+        </ul>
+
+        <hr>
+
+        <h2 id="section3">3. Agent Configuration: Passive vs Active</h2>
+
+        <h3>3.1 Understanding Agent Modes</h3>
+        <p>This is one of the most commonly misunderstood aspects of Zabbix configuration.</p>
+
+        <h4>Passive Agents (Default and Recommended)</h4>
+        <p>The Zabbix server <strong>actively polls</strong> the agent for data.</p>
+
+        <div class="svg-container">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 300">
+              <text x="350" y="25" text-anchor="middle" font-size="16" font-weight="bold" fill="#333">
+                Passive Agent Communication Flow
+              </text>
+              
+              <rect x="50" y="100" width="150" height="120" fill="#fff3e0" stroke="#f57c00" stroke-width="3" rx="5"/>
+              <text x="125" y="130" text-anchor="middle" font-size="13" font-weight="bold">Zabbix Server</text>
+              <text x="125" y="150" text-anchor="middle" font-size="10" fill="#666">Initiates Connection</text>
+              <text x="125" y="170" text-anchor="middle" font-size="9" fill="#666">Port 10051</text>
+              
+              <rect x="500" y="100" width="150" height="120" fill="#e3f2fd" stroke="#1976d2" stroke-width="2" rx="5"/>
+              <text x="575" y="130" text-anchor="middle" font-size="13" font-weight="bold">Zabbix Agent</text>
+              <text x="575" y="150" text-anchor="middle" font-size="10" fill="#666">Listens & Responds</text>
+              <text x="575" y="170" text-anchor="middle" font-size="9" fill="#666">Port 10050</text>
+              
+              <path d="M 200 130 L 500 130" stroke="#2196f3" stroke-width="3" fill="none" marker-end="url(#arrowblue)"/>
+              <text x="350" y="120" text-anchor="middle" font-size="11" fill="#1565c0" font-weight="bold">1. Request Metric</text>
+              <text x="350" y="145" text-anchor="middle" font-size="9" fill="#666">"What is CPU load?"</text>
+              
+              <path d="M 500 180 L 200 180" stroke="#4caf50" stroke-width="3" fill="none" marker-end="url(#arrowgreen2)"/>
+              <text x="350" y="170" text-anchor="middle" font-size="11" fill="#2e7d32" font-weight="bold">2. Return Value</text>
+              <text x="350" y="195" text-anchor="middle" font-size="9" fill="#666">"CPU load: 2.5"</text>
+              
+              <defs>
+                <marker id="arrowblue" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                  <path d="M0,0 L0,6 L9,3 z" fill="#2196f3"/>
+                </marker>
+                <marker id="arrowgreen2" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                  <path d="M0,0 L0,6 L9,3 z" fill="#4caf50"/>
+                </marker>
+              </defs>
+              
+              <rect x="50" y="240" width="600" height="50" fill="#f1f8e9" stroke="#558b2f" stroke-width="1" rx="3"/>
+              <text x="60" y="260" font-size="11" font-weight="bold" fill="#33691e">✓ DEFAULT CHOICE</text>
+              <text x="60" y="275" font-size="10" fill="#558b2f">Simple configuration • Supports remote commands • Easy troubleshooting • Predictable behaviour</text>
+            </svg>
+        </div>
+
+        <h4>How it works:</h4>
+        <ol>
+            <li>Server initiates connection to agent on port 10050/TCP</li>
+            <li>Server requests specific metric (e.g., CPU load)</li>
+            <li>Agent responds with current value</li>
+            <li>Connection closes</li>
+        </ol>
+
+        <h4>When to use Passive Agents:</h4>
+        <ul>
+            <li>✅ <strong>DEFAULT CHOICE</strong> for most deployments</li>
+            <li>✅ Standard metric collection (CPU, memory, disk, network)</li>
+            <li>✅ When server can reach agents directly</li>
+            <li>✅ When you need remote commands execution</li>
+            <li>✅ Simpler to troubleshoot and configure</li>
+            <li>✅ Better for environments with consistent connectivity</li>
+            <li>✅ Predictable resource usage on agent</li>
+        </ul>
+
+        <h4>Configuration Example (<code>/etc/zabbix/zabbix_agentd.conf</code>):</h4>
+        <pre><code># Server that is allowed to poll this agent
+Server=192.168.1.10,192.168.1.11
+
+# Listen on this IP
+ListenIP=0.0.0.0
+
+# Listen on this port
+ListenPort=10050
+
+# Hostname must match frontend configuration
+Hostname=server01.example.com.au</code></pre>
+
+        <h4>Active Agents (Special Use Cases Only)</h4>
+        <p>The agent <strong>initiates connections</strong> to the server.</p>
+
+        <div class="svg-container">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 400">
+              <text x="350" y="25" text-anchor="middle" font-size="16" font-weight="bold" fill="#333">
+                Active Agent Communication Flow
+              </text>
+              
+              <rect x="50" y="100" width="150" height="120" fill="#fff3e0" stroke="#f57c00" stroke-width="3" rx="5"/>
+              <text x="125" y="130" text-anchor="middle" font-size="13" font-weight="bold">Zabbix Server</text>
+              <text x="125" y="150" text-anchor="middle" font-size="10" fill="#666">Receives Data</text>
+              <text x="125" y="170" text-anchor="middle" font-size="9" fill="#666">Port 10051 (Trapper)</text>
+              
+              <rect x="500" y="100" width="150" height="120" fill="#e3f2fd" stroke="#1976d2" stroke-width="2" rx="5"/>
+              <text x="575" y="130" text-anchor="middle" font-size="13" font-weight="bold">Zabbix Agent</text>
+              <text x="575" y="150" text-anchor="middle" font-size="10" fill="#666">Initiates Connection</text>
+              <text x="575" y="170" text-anchor="middle" font-size="9" fill="#666">Collects & Pushes</text>
+              
+              <path d="M 500 110 L 200 110" stroke="#9c27b0" stroke-width="2" fill="none" marker-end="url(#arrowpurple)"/>
+              <text x="350" y="100" text-anchor="middle" font-size="10" fill="#6a1b9a" font-weight="bold">1. Request Config</text>
+              
+              <path d="M 200 130 L 500 130" stroke="#ff9800" stroke-width="2" fill="none" marker-end="url(#arroworange)"/>
+              <text x="350" y="145" text-anchor="middle" font-size="10" fill="#e65100" font-weight="bold">2. Receive Item List</text>
+              
+              <text x="575" y="195" text-anchor="middle" font-size="10" fill="#1565c0" font-weight="bold">3. Agent Collects</text>
+              <text x="575" y="210" text-anchor="middle" font-size="9" fill="#666">Data Locally</text>
+              
+              <path d="M 500 180 L 200 180" stroke="#4caf50" stroke-width="3" fill="none" marker-end="url(#arrowgreen3)"/>
+              <text x="350" y="195" text-anchor="middle" font-size="10" fill="#2e7d32" font-weight="bold">4. Push Collected Data</text>
+              
+              <defs>
+                <marker id="arrowpurple" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                  <path d="M0,0 L0,6 L9,3 z" fill="#9c27b0"/>
+                </marker>
+                <marker id="arroworange" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                  <path d="M0,0 L0,6 L9,3 z" fill="#ff9800"/>
+                </marker>
+                <marker id="arrowgreen3" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                  <path d="M0,0 L0,6 L9,3 z" fill="#4caf50"/>
+                </marker>
+              </defs>
+              
+              <rect x="50" y="240" width="600" height="140" fill="#fff3e0" stroke="#f57c00" stroke-width="2" rx="3"/>
+              <text x="60" y="260" font-size="12" font-weight="bold" fill="#e65100">⚠️ SPECIAL CASES ONLY - High Overhead Scenarios</text>
+              
+              <text x="60" y="280" font-size="10" font-weight="bold" fill="#d84315">Windows Event Log Monitoring:</text>
+              <text x="60" y="295" font-size="9" fill="#666">• Scanning multiple Event IDs requires local processing on agent</text>
+              <text x="60" y="308" font-size="9" fill="#666">• Event log service can consume MULTIPLE GIGABYTES of RAM</text>
+              <text x="60" y="321" font-size="9" fill="#666">• Cache bloat from continuous event log scanning</text>
+              <text x="60" y="334" font-size="9" fill="#666">• Can severely impact Windows server performance</text>
+              
+              <text x="60" y="352" font-size="10" font-weight="bold" fill="#d84315">Other High-Overhead Scenarios:</text>
+              <text x="60" y="367" font-size="9" fill="#666">• Complex log file pattern matching • Large file processing • Extensive local calculations</text>
+            </svg>
+        </div>
+
+        <h4>How it works:</h4>
+        <ol>
+            <li>Agent connects to server on port 10051/TCP</li>
+            <li>Agent requests list of items to monitor</li>
+            <li>Agent collects data locally</li>
+            <li>Agent pushes data to server periodically</li>
+            <li>Agent maintains connection</li>
+        </ol>
+
+        <h4>When to use Active Agents:</h4>
+        <ul>
+            <li>⚠️ <strong>SPECIAL CASES ONLY</strong></li>
+            <li>⚠️ Agent is behind NAT/firewall that prevents inbound connections</li>
+            <li>⚠️ Monitoring very remote locations with intermittent connectivity</li>
+            <li>⚠️ Need local buffering of metrics during network outages</li>
+            <li>⚠️ <strong>Windows Event Log monitoring requiring specific Event ID filtering</strong></li>
+            <li>⚠️ Log file monitoring with complex pattern matching</li>
+            <li>⚠️ Custom metrics requiring local processing before sending</li>
+        </ul>
+
+        <h3>3.2 Critical Performance Considerations for Active Agents</h3>
+
+        <div class="warning">
+            <h4>⚠️ WARNING: Active Agents Can Cause Significant Performance Impact</h4>
+            
+            <h4>Windows Event Log Monitoring - Major Performance Issue:</h4>
+            <p>When using active agents to monitor Windows Event Logs, particularly when scanning for multiple specific Event IDs, the following problems commonly occur:</p>
+            
+            <h4>Resource Consumption:</h4>
+            <ul>
+                <li>Windows Event Log service (Eventlog) can consume <strong>MULTIPLE GIGABYTES</strong> of RAM</li>
+                <li>Event log cache bloats as agent continuously queries events</li>
+                <li>CPU usage spikes during event processing</li>
+                <li>Disk I/O increases from constant log file access</li>
+            </ul>
+            
+            <h4>Real-World Example:</h4>
+            <pre><code>Scenario: Active agent monitoring 20 different Event IDs across Security, 
+          Application, and System logs
+
+Result:
+- Eventlog service: 4-8 GB RAM usage (up from normal 100-200 MB)
+- Agent process: 500 MB - 1 GB RAM
+- CPU spikes: 15-30% during collection intervals
+- Disk queue length increases
+- Application performance degradation</code></pre>
+
+            <h4>Why This Happens:</h4>
+            <ol>
+                <li>Active agent maintains persistent queries against Event Logs</li>
+                <li>Event Log service caches query results</li>
+                <li>Multiple Event ID filters = multiple cached result sets</li>
+                <li>Cache grows unbounded without proper configuration</li>
+                <li>Each collection interval compounds the problem</li>
+            </ol>
+        </div>
+
+        <h4>When Active Agents ARE Appropriate for Windows:</h4>
+        <ul>
+            <li>✅ Simple event forwarding (entire log categories)</li>
+            <li>✅ Infrequent event checks (15mins, hourly or daily)</li>
+            <li>✅ Reduced Event ID monitoring</li>
+            <li>✅ When dedicated event forwarding solutions not available</li>
+        </ul>
+
+        <h4>When to AVOID Active Agents on Windows:</h4>
+        <ul>
+            <li>❌ Monitoring multiple specific Event IDs (> 50 IDs)</li>
+            <li>❌ High-frequency event log scanning (< 1 minute intervals)</li>
+            <li>❌ Production servers with memory constraints</li>
+            <li>❌ Systems running memory-intensive applications</li>
+            <li>❌ Any scenario where passive agents can work instead</li>
+        </ul>
+
+        <h4>Better Alternatives for Windows Event Monitoring:</h4>
+        <ol>
+            <li><strong>Use Windows Event Forwarding (WEF)</strong>
+                <ul>
+                    <li>Native Windows capability</li>
+                    <li>Minimal overhead</li>
+                    <li>Centralised collection</li>
+                    <li>Forward events to central collector, monitor from there (where performance spikes wont impact production services)</li>
+                </ul>
+            </li>
+            <li><strong>Use Passive Agents with Targeted Items</strong>
+                <ul>
+                    <li>Monitor specific logs with log[] items</li>
+                    <li>Server polls at appropriate intervals</li>
+                    <li>More predictable resource usage</li>
+                </ul>
+            </li>
+            <li><strong>Implement Log Forwarding Solutions</strong>
+                <ul>
+                    <li>Syslog forwarding for Windows</li>
+                    <li>Dedicated event collection tools</li>
+                    <li>Reduce monitoring overhead</li>
+                </ul>
+            </li>
+        </ol>
+
+        <h4>Configuration Example (<code>/etc/zabbix/zabbix_agentd.conf</code>):</h4>
+        <pre><code># Server(s) to send active checks to
+ServerActive=192.168.1.10:10051
+
+# Hostname must EXACTLY match frontend configuration
+Hostname=server01.example.com.au
+
+# How often to refresh active checks list
+RefreshActiveChecks=120
+
+# Buffer size (increase for high-volume event monitoring)
+# WARNING: Larger buffers = more memory usage
+BufferSize=100</code></pre>
+
+        <h3>3.3 Critical Configuration Points</h3>
+
+        <h4>Common Mistakes to Avoid:</h4>
+
+        <div class="error">
+            <p><strong>❌ Using Active agents for standard monitoring</strong></p>
+            <ul>
+                <li>Active agents are NOT faster or better for normal metrics</li>
+                <li>They add complexity without benefit</li>
+                <li>Remote commands don't work with active agents by default (Zabbix 6.x and earlier)</li>
+                <li>Increased memory and CPU overhead on agents</li>
+            </ul>
+        </div>
+
+        <div class="error">
+            <p><strong>❌ Using Active agents for Windows Event Log monitoring without understanding overhead</strong></p>
+            <ul>
+                <li>Can cause severe performance degradation</li>
+                <li>Memory consumption can exceed multiple gigabytes</li>
+                <li>Impact on production applications</li>
+                <li>Difficult to troubleshoot performance issues</li>
+            </ul>
+        </div>
+
+        <div class="error">
+            <p><strong>❌ Hostname mismatches</strong></p>
+            <ul>
+                <li>Active agents require exact hostname match between config and frontend</li>
+                <li>This is the #1 cause of "Agent not available" errors</li>
+            </ul>
+        </div>
+
+        <div class="error">
+            <p><strong>❌ Inconsistent agent configuration files</strong></p>
+            <ul>
+                <li>Syntax errors break agent functionality</li>
+                <li>Comments must start with <code>#</code> at beginning of line</li>
+                <li>Always validate syntax after editing</li>
+            </ul>
+        </div>
+
+        <div class="success">
+            <p><strong>✅ Correct Approach:</strong></p>
+            <ul>
+                <li>Use <strong>passive agents</strong> for 95% of monitoring needs</li>
+                <li>Only use active agents when you have a specific technical requirement</li>
+                <li>For Windows Event Log monitoring, use Windows Event Forwarding if performance is impacted</li>
+                <li>Maintain consistent, well-documented configuration files</li>
+                <li>Test configuration syntax before applying</li>
+                <li>Monitor agent resource usage when using active mode</li>
+            </ul>
+        </div>
+
+        <h3>3.4 Configuration File Syntax</h3>
+
+        <h4>Valid Configuration:</h4>
+        <pre><code># This is a comment
+Server=192.168.1.10
+ListenPort=10050
+Hostname=server01.example.com.au</code></pre>
+
+        <h4>Invalid Configuration (Common Errors):</h4>
+        <pre><code>Server=192.168.1.10,  # Don't put comments after values!
+ListenPort = 10050    # Don't use spaces around =
+Hostname=             # Don't leave values empty
+  Server=192.168.1.10 # Don't indent parameters</code></pre>
+
+        <h3>3.5 Video Resources</h3>
+        <ul>
+            <li><strong>"Zabbix Agent: Active vs. Passive":</strong> <a href="https://blog.zabbix.com/zabbix-agent-active-vs-passive/9207/" target="_blank">https://blog.zabbix.com/zabbix-agent-active-vs-passive/9207/</a></li>
+            <li><strong>"Handy Tips #15: Deploying Zabbix Passive and Active Agents":</strong> <a href="https://blog.zabbix.com/handy-tips-15-deploying-zabbix-passive-and-active-agents/17696/" target="_blank">https://blog.zabbix.com/handy-tips-15-deploying-zabbix-passive-and-active-agents/17696/</a></li>
+            <li><strong>Zabbix 101 Course:</strong> Agent configuration module covers both modes with practical examples</li>
+        </ul>
+
+        <hr>
+
+        <h2 id="section4">4. When to Use Zabbix Proxies</h2>
+
+        <h3>4.1 Understanding Proxy Purpose</h3>
+
+        <h4>What is a Zabbix Proxy?</h4>
+        <p>A Zabbix proxy is an intermediate data collector that can gather metrics from multiple agents and forward consolidated data to the Zabbix server.</p>
+
+        <div class="warning">
+            <p><strong>Critical Understanding:</strong> Proxies are NOT always needed or beneficial. They add complexity, additional databases, and potential points of failure.</p>
+        </div>
+
+        <h3>4.2 Proxy Architecture Comparison</h3>
+
+        <h4>WITHOUT Proxies (Recommended for Single Site):</h4>
+
+        <div class="svg-container">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 300">
+              <text x="350" y="25" text-anchor="middle" font-size="16" font-weight="bold" fill="#333">
+                Direct Monitoring (No Proxies)
+              </text>
+              
+              <rect x="100" y="80" width="80" height="60" fill="#e3f2fd" stroke="#1976d2" stroke-width="2" rx="3"/>
+              <text x="140" y="105" text-anchor="middle" font-size="11">Agent 1</text>
+              <text x="140" y="125" text-anchor="middle" font-size="9" fill="#666">10050</text>
+              
+              <rect x="220" y="80" width="80" height="60" fill="#e3f2fd" stroke="#1976d2" stroke-width="2" rx="3"/>
+              <text x="260" y="105" text-anchor="middle" font-size="11">Agent 2</text>
+              <text x="260" y="125" text-anchor="middle" font-size="9" fill="#666">10050</text>
+              
+              <rect x="400" y="80" width="80" height="60" fill="#e3f2fd" stroke="#1976d2" stroke-width="2" rx="3"/>
+              <text x="440" y="105" text-anchor="middle" font-size="11">Agent 3</text>
+              <text x="440" y="125" text-anchor="middle" font-size="9" fill="#666">10050</text>
+              
+              <rect x="520" y="80" width="80" height="60" fill="#e3f2fd" stroke="#1976d2" stroke-width="2" rx="3"/>
+              <text x="560" y="105" text-anchor="middle" font-size="11">Agent 4</text>
+              <text x="560" y="125" text-anchor="middle" font-size="9" fill="#666">10050</text>
+              
+              <path d="M 140 140 L 350 200" stroke="#4caf50" stroke-width="2" fill="none"/>
+              <path d="M 260 140 L 350 200" stroke="#4caf50" stroke-width="2" fill="none"/>
+              <path d="M 440 140 L 350 200" stroke="#4caf50" stroke-width="2" fill="none"/>
+              <path d="M 560 140 L 350 200" stroke="#4caf50" stroke-width="2" fill="none"/>
+              
+              <rect x="250" y="200" width="200" height="70" fill="#fff3e0" stroke="#f57c00" stroke-width="3" rx="5"/>
+              <text x="350" y="225" text-anchor="middle" font-size="13" font-weight="bold">Zabbix Server</text>
+              <text x="350" y="245" text-anchor="middle" font-size="10" fill="#666">+ PostgreSQL</text>
+              <text x="350" y="260" text-anchor="middle" font-size="9" fill="#666">Single database</text>
+              
+              <rect x="50" y="285" width="600" height="12" fill="none"/>
+              <text x="350" y="295" text-anchor="middle" font-size="10" fill="#2e7d32" font-weight="bold">
+                ✓ Simple • Easy maintenance • Fewer components • Single database
+              </text>
+            </svg>
+        </div>
+
+        <h4>WITH Proxies (Only When Justified):</h4>
+
+        <div class="svg-container">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450">
+              <text x="400" y="25" text-anchor="middle" font-size="16" font-weight="bold" fill="#333">
+                Distributed Monitoring with Proxies (When Required)
+              </text>
+              
+              <rect x="50" y="60" width="280" height="180" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="2" rx="5"/>
+              <text x="190" y="85" text-anchor="middle" font-size="12" font-weight="bold" fill="#4a148c">Remote Site 1</text>
+              
+              <rect x="80" y="100" width="70" height="50" fill="#e3f2fd" stroke="#1976d2" stroke-width="1" rx="3"/>
+              <text x="115" y="120" text-anchor="middle" font-size="10">Agent</text>
+              <text x="115" y="135" text-anchor="middle" font-size="8" fill="#666">10050</text>
+              
+              <rect x="170" y="100" width="70" height="50" fill="#e3f2fd" stroke="#1976d2" stroke-width="1" rx="3"/>
+              <text x="205" y="120" text-anchor="middle" font-size="10">Agent</text>
+              <text x="205" y="135" text-anchor="middle" font-size="8" fill="#666">10050</text>
+              
+              <rect x="260" y="100" width="50" height="50" fill="#e3f2fd" stroke="#1976d2" stroke-width="1" rx="3"/>
+              <text x="285" y="120" text-anchor="middle" font-size="9">...</text>
+              
+              <path d="M 115 150 L 190 180" stroke="#4caf50" stroke-width="1.5" fill="none"/>
+              <path d="M 205 150 L 190 180" stroke="#4caf50" stroke-width="1.5" fill="none"/>
+              <path d="M 285 150 L 190 180" stroke="#4caf50" stroke-width="1.5" fill="none"/>
+              
+              <rect x="140" y="180" width="100" height="50" fill="#fff" stroke="#ff6f00" stroke-width="2" rx="3"/>
+              <text x="190" y="200" text-anchor="middle" font-size="11" font-weight="bold">Proxy 1</text>
+              <text x="190" y="215" text-anchor="middle" font-size="8" fill="#666">+ Database</text>
+              
+              <rect x="470" y="60" width="280" height="180" fill="#e8f5e9" stroke="#388e3c" stroke-width="2" rx="5"/>
+              <text x="610" y="85" text-anchor="middle" font-size="12" font-weight="bold" fill="#1b5e20">Remote Site 2</text>
+              
+              <rect x="490" y="100" width="70" height="50" fill="#e3f2fd" stroke="#1976d2" stroke-width="1" rx="3"/>
+              <text x="525" y="120" text-anchor="middle" font-size="10">Agent</text>
+              <text x="525" y="135" text-anchor="middle" font-size="8" fill="#666">10050</text>
+              
+              <rect x="580" y="100" width="70" height="50" fill="#e3f2fd" stroke="#1976d2" stroke-width="1" rx="3"/>
+              <text x="615" y="120" text-anchor="middle" font-size="10">Agent</text>
+              <text x="615" y="135" text-anchor="middle" font-size="8" fill="#666">10050</text>
+              
+              <rect x="670" y="100" width="50" height="50" fill="#e3f2fd" stroke="#1976d2" stroke-width="1" rx="3"/>
+              <text x="695" y="120" text-anchor="middle" font-size="9">...</text>
+              
+              <path d="M 525 150 L 610 180" stroke="#4caf50" stroke-width="1.5" fill="none"/>
+              <path d="M 615 150 L 610 180" stroke="#4caf50" stroke-width="1.5" fill="none"/>
+              <path d="M 695 150 L 610 180" stroke="#4caf50" stroke-width="1.5" fill="none"/>
+              
+              <rect x="560" y="180" width="100" height="50" fill="#fff" stroke="#ff6f00" stroke-width="2" rx="3"/>
+              <text x="610" y="200" text-anchor="middle" font-size="11" font-weight="bold">Proxy 2</text>
+              <text x="610" y="215" text-anchor="middle" font-size="8" fill="#666">+ Database</text>
+              
+              <ellipse cx="400" cy="290" rx="120" ry="40" fill="#e0e0e0" stroke="#616161" stroke-width="2"/>
+              <text x="400" y="295" text-anchor="middle" font-size="11" fill="#424242">WAN / Internet</text>
+              
+              <path d="M 190 230 L 320 270" stroke="#ff9800" stroke-width="2" fill="none"/>
+              <path d="M 610 230 L 480 270" stroke="#ff9800" stroke-width="2" fill="none"/>
+              
+              <rect x="300" y="350" width="200" height="80" fill="#fff3e0" stroke="#f57c00" stroke-width="3" rx="5"/>
+              <text x="400" y="375" text-anchor="middle" font-size="13" font-weight="bold">Zabbix Server</text>
+              <text x="400" y="395" text-anchor="middle" font-size="10" fill="#666">Central Data Centre</text>
+              <text x="400" y="415" text-anchor="middle" font-size="9" fill="#666">+ PostgreSQL</text>
+              
+              <path d="M 400 330 L 400 350" stroke="#ff9800" stroke-width="2" fill="none"/>
+              
+              <text x="400" y="445" text-anchor="middle" font-size="9" fill="#d84315" font-weight="bold">
+                Use proxies ONLY for: Geographic distribution • Network isolation • Firewall constraints
+              </text>
+            </svg>
+        </div>
+
+        <h3>4.3 When Proxies ARE Appropriate</h3>
+
+        <div class="success">
+            <h4>✅ Geographic Distribution</h4>
+            <ul>
+                <li>Monitoring remote branch offices across different cities/countries</li>
+                <li>High network latency between sites (>50ms)</li>
+                <li>Expensive or unreliable WAN links</li>
+                <li>Need to buffer data during network outages</li>
+            </ul>
+
+            <h4>✅ Firewall Segmentation</h4>
+            <ul>
+                <li>Monitoring hosts in DMZ or highly restricted networks</li>
+                <li>Multiple isolated security zones</li>
+                <li>Reduces firewall rules by consolidating connections</li>
+            </ul>
+
+            <h4>✅ Massive Scale (1000+ hosts per server)</h4>
+            <ul>
+                <li>Very large environments exceeding server capacity</li>
+                <li>Need to distribute polling load</li>
+                <li>Server CPU/memory constraints</li>
+                <li>Database performance bottlenecks</li>
+            </ul>
+
+            <h4>✅ Distributed IT Infrastructure</h4>
+            <ul>
+                <li>Multi-national organisation with regional data centres</li>
+                <li>Network segmentation by geography</li>
+                <li>Local monitoring in remote locations with limited bandwidth</li>
+            </ul>
+        </div>
+
+        <h3>4.4 When Proxies Are NOT Appropriate</h3>
+
+        <div class="svg-container">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 400">
+              <text x="350" y="25" text-anchor="middle" font-size="16" font-weight="bold" fill="#d32f2f">
+                ❌ INCORRECT: Proxy Adjacent to Server
+              </text>
+              
+              <rect x="100" y="60" width="500" height="250" fill="#ffebee" stroke="#c62828" stroke-width="3" stroke-dasharray="5,5" rx="5"/>
+              <text x="350" y="85" text-anchor="middle" font-size="13" font-weight="bold" fill="#b71c1c">
+                Same Data Centre / Same Network
+              </text>
+              
+              <rect x="150" y="110" width="80" height="50" fill="#e3f2fd" stroke="#1976d2" stroke-width="2" rx="3"/>
+              <text x="190" y="130" text-anchor="middle" font-size="10">Agent 1</text>
+              <text x="190" y="145" text-anchor="middle" font-size="8" fill="#666">10050</text>
+              
+              <rect x="260" y="110" width="80" height="50" fill="#e3f2fd" stroke="#1976d2" stroke-width="2" rx="3"/>
+              <text x="300" y="130" text-anchor="middle" font-size="10">Agent 2</text>
+              <text x="300" y="145" text-anchor="middle" font-size="8" fill="#666">10050</text>
+              
+              <rect x="370" y="110" width="80" height="50" fill="#e3f2fd" stroke="#1976d2" stroke-width="2" rx="3"/>
+              <text x="410" y="130" text-anchor="middle" font-size="10">Agent 3</text>
+              <text x="410" y="145" text-anchor="middle" font-size="8" fill="#666">10050</text>
+              
+              <rect x="480" y="110" width="80" height="50" fill="#e3f2fd" stroke="#1976d2" stroke-width="2" rx="3"/>
+              <text x="520" y="130" text-anchor="middle" font-size="10">Agent 4</text>
+              <text x="520" y="145" text-anchor="middle" font-size="8" fill="#666">10050</text>
+              
+              <path d="M 190 160 L 250 200" stroke="#4caf50" stroke-width="2" fill="none"/>
+              <path d="M 300 160 L 300 200" stroke="#4caf50" stroke-width="2" fill="none"/>
+              <path d="M 410 160 L 350 200" stroke="#4caf50" stroke-width="2" fill="none"/>
+              <path d="M 520 160 L 350 200" stroke="#4caf50" stroke-width="2" fill="none"/>
+              
+              <rect x="250" y="200" width="100" height="60" fill="#fff" stroke="#ff6f00" stroke-width="2" rx="3"/>
+              <text x="300" y="220" text-anchor="middle" font-size="11" font-weight="bold">Proxy</text>
+              <text x="300" y="235" text-anchor="middle" font-size="9" fill="#666">+ Database</text>
+              <text x="300" y="250" text-anchor="middle" font-size="8" fill="#d84315">UNNECESSARY!</text>
+              
+              <path d="M 350 240 L 400 270" stroke="#ff9800" stroke-width="2" fill="none"/>
+              <text x="375" y="260" text-anchor="middle" font-size="9" fill="#666">Short</text>
+              
+              <rect x="350" y="270" width="150" height="60" fill="#fff3e0" stroke="#f57c00" stroke-width="3" rx="5"/>
+              <text x="425" y="295" text-anchor="middle" font-size="12" font-weight="bold">Zabbix Server</text>
+              <text x="425" y="313" text-anchor="middle" font-size="9" fill="#666">+ PostgreSQL</text>
+              
+              <rect x="50" y="330" width="600" height="60" fill="#fff3e0" stroke="#f57c00" stroke-width="1" rx="3"/>
+              <text x="60" y="350" font-size="11" font-weight="bold" fill="#e65100">Problems with this approach:</text>
+              <text x="60" y="365" font-size="9" fill="#666">• Adds unnecessary complexity • Additional database to maintain • Extra point of failure</text>
+              <text x="60" y="380" font-size="9" fill="#666">• No network isolation benefit • No performance benefit • Increases maintenance burden</text>
+            </svg>
+        </div>
+
+        <div class="error">
+            <h4>❌ Single Data Centre Environments</h4>
+            <ul>
+                <li>All infrastructure in same location</li>
+                <li>Low latency network (< 10ms)</li>
+                <li>Directly accessible hosts</li>
+                <li><strong>Adding proxies here increases complexity without benefit</strong></li>
+            </ul>
+
+            <h4>❌ Adjacent to Zabbix Server</h4>
+            <ul>
+                <li>Proxy in same subnet as server</li>
+                <li>No network isolation or distance</li>
+                <li><strong>This is the most common proxy misuse</strong></li>
+                <li>Creates unnecessary complexity and maintenance burden</li>
+            </ul>
+
+            <h4>❌ Small to Medium Deployments</h4>
+            <ul>
+                <li>Less than 500-1000 hosts</li>
+                <li>Modern server hardware</li>
+                <li>Well-tuned database</li>
+                <li><strong>Server can handle direct monitoring easily</strong></li>
+            </ul>
+
+            <h4>❌ "Just Because" Deployments</h4>
+            <ul>
+                <li>No technical justification</li>
+                <li>Copying architecture from different environment</li>
+                <li>Assumption that "more components = better"</li>
+                <li><strong>Violates principle of appropriate complexity</strong></li>
+            </ul>
+        </div>
+
+        <h3>4.5 Proxy Architecture Considerations</h3>
+
+        <h4>Each Proxy Requires:</h4>
+        <ul>
+            <li>Dedicated server/VM</li>
+            <li>Separate database (SQLite/MySQL/PostgreSQL)</li>
+            <li>Network connectivity to both agents and server</li>
+            <li>Configuration management</li>
+            <li>Monitoring (monitor the monitors!)</li>
+            <li>Maintenance windows</li>
+            <li>Additional training for staff</li>
+        </ul>
+
+        <h4>Proxy Database Choices:</h4>
+        <ul>
+            <li><strong>SQLite:</strong> Suitable for small proxy deployments (< 100 hosts)</li>
+            <li><strong>MySQL/PostgreSQL:</strong> Required for larger proxy deployments</li>
+            <li>Each adds complexity and maintenance requirements</li>
+        </ul>
+
+        <h3>4.6 Alternative: Direct Server Monitoring</h3>
+
+        <h4>For single data centre deployments:</h4>
+
+        <div class="success">
+            <p><strong>Benefits:</strong></p>
+            <ul>
+                <li>Simpler architecture</li>
+                <li>Fewer components to maintain</li>
+                <li>Easier troubleshooting</li>
+                <li>No proxy database management</li>
+                <li>Reduced complexity</li>
+                <li>Lower operational burden</li>
+            </ul>
+
+            <p><strong>Approach:</strong></p>
+            <ol>
+                <li>Size Zabbix server appropriately</li>
+                <li>Tune database for performance</li>
+                <li>Use passive agents for direct polling</li>
+                <li>Implement HA at server level if needed (see Section 5)</li>
+                <li>Rely on VM snapshots/backups for DR</li>
+            </ol>
+        </div>
+
+        <h3>4.7 Video Resources</h3>
+        <ul>
+            <li><strong>"Hidden Benefits of Zabbix Proxy":</strong> <a href="https://blog.zabbix.com/hidden-benefits-of-zabbix-proxy/9359/" target="_blank">https://blog.zabbix.com/hidden-benefits-of-zabbix-proxy/9359/</a></li>
+            <li><strong>"Zabbix Proxy Performance Tuning":</strong> <a href="https://blog.zabbix.com/zabbix-proxy-performance-tuning-and-troubleshooting/14013/" target="_blank">https://blog.zabbix.com/zabbix-proxy-performance-tuning-and-troubleshooting/14013/</a></li>
+            <li><strong>Official Documentation - When to Use Proxies:</strong> <a href="https://www.zabbix.com/documentation/current/en/manual/concepts/proxy" target="_blank">https://www.zabbix.com/documentation/current/en/manual/concepts/proxy</a></li>
+            <li><strong>Zabbix 101 Course:</strong> Covers distributed monitoring and when proxies add value</li>
+        </ul>
+
+        <div class="info">
+            <p><strong>Key Takeaway from Videos:</strong> Note that the videos emphasise using proxies for <em>distributed</em> monitoring and <em>remote locations</em>. They don't recommend proxies for local, well-connected infrastructure.</p>
+        </div>
+
+        <hr>
+
+        <h2 id="section5">5. High Availability Architectures</h2>
+
+        <h3>5.1 Native Zabbix HA (Zabbix 6.0+)</h3>
+
+        <p>Since Zabbix 6.0, native high availability is built into the Zabbix server process. However, <strong>this only handles Zabbix server failover</strong> - not database availability.</p>
+
+        <div class="warning">
+            <p><strong>Critical Understanding:</strong> Native Zabbix HA is <strong>NOT</strong> a complete HA solution. It only provides automatic failover for the Zabbix server process itself. The database remains a single point of failure unless separately clustered.</p>
+        </div>
+
+        <h4>How It Works:</h4>
+        <ul>
+            <li>Multiple Zabbix server nodes in active/passive configuration</li>
+            <li>Automatic failover without external clustering tools</li>
+            <li>Nodes coordinate through the database</li>
+            <li>Simple configuration with minimal complexity</li>
+            <li><strong>Independent of underlying infrastructure HA:</strong> Works alongside VMware HA, hypervisor clustering, etc.</li>
+        </ul>
+
+        <div class="info">
+            <p><strong>Important:</strong> Native Zabbix HA handles <em>Zabbix server process</em> failover only. For true site redundancy, you still need:</p>
+            <ul>
+                <li>A highly available database (database cluster or replication)</li>
+                <li>Shared or replicated storage accessible from both sites</li>
+                <li>Network connectivity between sites for database access</li>
+            </ul>
+            <p>Native HA is <strong>independent of</strong> underlying infrastructure HA (like VMware HA clusters). However, they are <strong>not complementary</strong> when addressing the same failure domain. For example:</p>
+            <ul>
+                <li>❌ Running both Native HA nodes within the same VMware cluster provides little additional benefit</li>
+                <li>✓ Native HA shines when nodes are in different sites/locations with a shared/replicated database</li>
+                <li>✓ VMware HA alone is simpler for single-site protection</li>
+            </ul>
+        </div>
+
+        <div class="svg-container">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 400">
+              <text x="350" y="25" text-anchor="middle" font-size="16" font-weight="bold" fill="#333">
+                Native Zabbix HA Architecture
+              </text>
+              
+              <rect x="100" y="80" width="180" height="120" fill="#c8e6c9" stroke="#388e3c" stroke-width="3" rx="5"/>
+              <text x="190" y="105" text-anchor="middle" font-size="13" font-weight="bold">Zabbix Server 1</text>
+              <text x="190" y="125" text-anchor="middle" font-size="12" fill="#2e7d32">(ACTIVE)</text>
+              <text x="190" y="145" text-anchor="middle" font-size="10" fill="#666">HANodeName:</text>
+              <text x="190" y="160" text-anchor="middle" font-size="9" fill="#666">zabbix-node-01</text>
+              <text x="190" y="175" text-anchor="middle" font-size="9" fill="#666">192.168.1.10:10051</text>
+              
+              <rect x="420" y="80" width="180" height="120" fill="#fff9c4" stroke="#f57f17" stroke-width="2" rx="5"/>
+              <text x="510" y="105" text-anchor="middle" font-size="13" font-weight="bold">Zabbix Server 2</text>
+              <text x="510" y="125" text-anchor="middle" font-size="12" fill="#f57f17">(STANDBY)</text>
+              <text x="510" y="145" text-anchor="middle" font-size="10" fill="#666">HANodeName:</text>
+              <text x="510" y="160" text-anchor="middle" font-size="9" fill="#666">zabbix-node-02</text>
+              <text x="510" y="175" text-anchor="middle" font-size="9" fill="#666">192.168.1.11:10051</text>
+              
+              <path d="M 190 200 L 190 250" stroke="#388e3c" stroke-width="2" fill="none" marker-end="url(#arrowdown)"/>
+              <path d="M 510 200 L 510 250" stroke="#f57f17" stroke-width="2" fill="none" marker-end="url(#arrowdown)"/>
+              
+              <text x="120" y="230" font-size="9" fill="#2e7d32">Heartbeat</text>
+              <text x="545" y="230" font-size="9" fill="#f57f17">Heartbeat</text>
+              
+              <rect x="250" y="260" width="200" height="80" fill="#e3f2fd" stroke="#1976d2" stroke-width="3" rx="5"/>
+              <text x="350" y="285" text-anchor="middle" font-size="13" font-weight="bold">PostgreSQL</text>
+              <text x="350" y="305" text-anchor="middle" font-size="11" fill="#666">Shared Database</text>
+              <text x="350" y="322" text-anchor="middle" font-size="9" fill="#666">Stores HA state</text>
+              
+              <defs>
+                <marker id="arrowdown" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto" markerUnits="strokeWidth">
+                  <path d="M0,0 L10,5 L0,10 L3,5 z" fill="#666"/>
+                </marker>
+              </defs>
+              
+              <rect x="50" y="360" width="600" height="35" fill="#fff3e0" stroke="#f57c00" stroke-width="1" rx="3"/>
+              <text x="60" y="378" font-size="11" font-weight="bold" fill="#e65100">⚠ Note:</text>
+              <text x="60" y="390" font-size="9" fill="#666">This diagram shows Zabbix server HA only • Database is still single point of failure • ~5 second failover applies to Zabbix process only</text>
+            </svg>
+        </div>
+
+        <h4>Configuration (<code>zabbix_server.conf</code>):</h4>
+        <pre><code># Node 1
+HANodeName=zabbix-node-01
+NodeAddress=192.168.1.10:10051
+
+# Node 2
+HANodeName=zabbix-node-02
+NodeAddress=192.168.1.11:10051</code></pre>
+
+        <h4>What Native HA Provides:</h4>
+        <ul>
+            <li>Zabbix server process failover (not database failover)</li>
+            <li>No external clustering tools needed (Pacemaker, Corosync, etc.)</li>
+            <li>Automatic failover in ~5 seconds (Zabbix process only)</li>
+            <li>Useful for single-site scenarios with shared database</li>
+        </ul>
+
+        <div class="warning">
+            <h4>What Native HA Does NOT Provide:</h4>
+            <ul>
+                <li>❌ Database high availability or failover</li>
+                <li>❌ Cross-site redundancy (database must be accessible from both nodes)</li>
+                <li>❌ Protection if database site fails</li>
+                <li>❌ True zero-downtime patching (database patching still causes outage)</li>
+            </ul>
+        </div>
+
+        <div class="info">
+            <h4>Limited Use Case: Patching Zabbix Server Without Database Downtime</h4>
+            <p>Native HA can enable Zabbix server maintenance without <em>Zabbix</em> downtime, <strong>but only when the database remains available:</strong></p>
+            <ol>
+                <li>Stop Zabbix server on standby node (Node 2)</li>
+                <li>Apply OS patches, upgrade Zabbix version, etc. on Node 2</li>
+                <li>Start Zabbix server on Node 2 (remains in standby)</li>
+                <li>Manually failover: Stop Node 1, Node 2 becomes active (~5 seconds)</li>
+                <li>Patch/upgrade Node 1</li>
+                <li>Start Node 1 (becomes standby)</li>
+            </ol>
+            <p><strong>Important:</strong> This does not help with database patching - that still requires an outage unless you have a separate database cluster.</p>
+        </div>
+
+        <h3>5.2 The Database Problem</h3>
+
+        <p><strong>Reality Check:</strong> To achieve true high availability with Native Zabbix HA, you need a highly available database. This is significantly more complex than the Zabbix server HA itself.</p>
+
+        <div class="error">
+            <h4>❌ NOT an HA Solution: Single Database with Snapshots</h4>
+            <p><strong>Common but incorrect approach:</strong></p>
+            <ul>
+                <li>Single PostgreSQL instance on VM</li>
+                <li>Regular snapshots via NetApp SnapMirror (daily/hourly)</li>
+                <li>VM HA via vMotion/DRS within one site</li>
+            </ul>
+            <p><strong>Why this is NOT HA:</strong></p>
+            <ul>
+                <li>If the database VM fails, Zabbix HA nodes cannot function (both fail)</li>
+                <li>If the site hosting the database fails, you have no Zabbix availability</li>
+                <li>Snapshots are DR (disaster recovery), not HA (high availability)</li>
+                <li>This provides <strong>single-site protection only</strong></li>
+            </ul>
+        </div>
+
+        <h4>True Database HA Requires Clustering</h4>
+
+        <div class="warning">
+            <p><strong>Complex Reality:</strong> Achieving database HA across sites requires database clustering, which is significantly more complex than Zabbix native HA.</p>
+        </div>
+
+        <h4>Option 1: PostgreSQL Streaming Replication with pg_auto_failover</h4>
+        <ul>
+            <li>Two PostgreSQL nodes with streaming replication (one per site)</li>
+            <li><strong>Monitor/witness node required</strong> (needs third location or risk split-brain)</li>
+            <li>HAProxy for connection routing</li>
+            <li>Automatic failover for database</li>
+            <li><strong>Advantage:</strong> Minimal data loss, automatic failover</li>
+            <li><strong>Complexity:</strong> High - requires PostgreSQL expertise, three-site infrastructure</li>
+            <li><strong>Witness requirement:</strong> Third site/location needed to avoid split-brain</li>
+        </ul>
+
+        <h4>Option 2: MariaDB with Galera Clustering</h4>
+        <ul>
+            <li>Active/active database cluster</li>
+            <li>Multiple writable nodes (typically 3 minimum)</li>
+            <li><strong>Requires minimum 3 nodes</strong> for proper quorum (prevents split-brain)</li>
+            <li>Automatic synchronisation between nodes</li>
+            <li><strong>Advantage:</strong> No single point of failure, multi-master</li>
+            <li><strong>Complexity:</strong> Very high - requires Galera understanding, three-node minimum</li>
+            <li><strong>Third node requirement:</strong> Cannot do 2-site Galera without third location</li>
+        </ul>
+
+        <div class="error">
+            <h4>The Third Site/Witness Problem</h4>
+            <p>For true cross-site database HA, you cannot avoid the need for a third location:</p>
+            <ul>
+                <li><strong>Two-node clusters are inherently problematic</strong> (split-brain risk)</li>
+                <li>Witness/monitor nodes must be in a third location (not Site A or Site B)</li>
+                <li>Many organizations do not have a third datacenter location</li>
+                <li>Cloud-based witness is possible but adds dependency and complexity</li>
+            </ul>
+            <p><strong>Bottom line:</strong> If you only have two sites, true database HA is very difficult to achieve properly.</p>
+        </div>
+
+        <h3>5.3 What NOT to Do</h3>
+
+        <div class="svg-container">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300">
+              <text x="300" y="25" text-anchor="middle" font-size="16" font-weight="bold" fill="#d32f2f">
+                ❌ INCORRECT: 2-Node PostgreSQL Cluster Without Witness
+              </text>
+              
+              <rect x="80" y="80" width="140" height="100" fill="#ffebee" stroke="#c62828" stroke-width="2" rx="5"/>
+              <text x="150" y="105" text-anchor="middle" font-size="12" font-weight="bold">PostgreSQL 1</text>
+              <text x="150" y="125" text-anchor="middle" font-size="10" fill="#666">Primary</text>
+              <text x="150" y="145" text-anchor="middle" font-size="9" fill="#d32f2f">Can't determine</text>
+              <text x="150" y="160" text-anchor="middle" font-size="9" fill="#d32f2f">if other node failed</text>
+              
+              <rect x="380" y="80" width="140" height="100" fill="#ffebee" stroke="#c62828" stroke-width="2" rx="5"/>
+              <text x="450" y="105" text-anchor="middle" font-size="12" font-weight="bold">PostgreSQL 2</text>
+              <text x="450" y="125" text-anchor="middle" font-size="10" fill="#666">Standby</text>
+              <text x="450" y="145" text-anchor="middle" font-size="9" fill="#d32f2f">Can't determine</text>
+              <text x="450" y="160" text-anchor="middle" font-size="9" fill="#d32f2f">if other node failed</text>
+              
+              <path d="M 220 130 L 380 130" stroke="#d32f2f" stroke-width="3" stroke-dasharray="5,5" fill="none"/>
+              <text x="300" y="120" text-anchor="middle" font-size="10" fill="#d32f2f" font-weight="bold">Network Split</text>
+              
+              <rect x="50" y="200" width="500" height="90" fill="#fff3e0" stroke="#f57c00" stroke-width="2" rx="3"/>
+              <text x="60" y="220" font-size="11" font-weight="bold" fill="#e65100">Problems Without Witness/Quorum:</text>
+              <text x="60" y="238" font-size="9" fill="#666">• Split-brain scenario: Both nodes think they're primary</text>
+              <text x="60" y="252" font-size="9" fill="#666">• Data divergence and corruption</text>
+              <text x="60" y="266" font-size="9" fill="#666">• Unreliable failover behaviour</text>
+              <text x="60" y="280" font-size="9" fill="#666">• Difficult recovery procedures</text>
+            </svg>
+        </div>
+
+        <div class="error">
+            <h4>❌ Complex Clustering Without Expertise</h4>
+            <ul>
+                <li>PostgreSQL clusters without proper configuration</li>
+                <li>Missing witness nodes in HA setups</li>
+                <li><strong>2-node clusters without quorum management</strong></li>
+                <li>Unreliable failover behaviour</li>
+            </ul>
+
+            <h4>❌ Over-Engineering for Small Environments</h4>
+            <ul>
+                <li>Complex HA for non-critical monitoring</li>
+                <li>Multiple layers of redundancy</li>
+                <li>Creating more failure points than you prevent</li>
+            </ul>
+
+            <h4>❌ Using Outdated HA Methods</h4>
+            <ul>
+                <li>Third-party clustering tools when native HA available</li>
+                <li>Pacemaker/Corosync for Zabbix server (pre-6.0 approach)</li>
+                <li>VIP failover scripts</li>
+            </ul>
+        </div>
+
+        <h3>5.4 Inherited HA Scenario: VMware HA with NetApp SVM-DR</h3>
+
+        <p>When inheriting an existing infrastructure with VMware HA clusters and NetApp SVM-DR replication between sites, you can leverage this architecture for Zabbix high availability.</p>
+
+        <div class="warning">
+            <p><strong>Note:</strong> This architecture does <strong>NOT</strong> use Zabbix native HA clustering. The Site B server is a complete replica of Site A that remains powered off (or powered on but idle) until a disaster recovery scenario. This is a traditional DR approach, not active-passive HA.</p>
+        </div>
+
+        <div class="svg-container">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500">
+              <text x="400" y="25" text-anchor="middle" font-size="16" font-weight="bold" fill="#333">
+                VMware HA + NetApp SVM-DR Architecture
+              </text>
+
+              <!-- Site A -->
+              <rect x="40" y="60" width="340" height="360" fill="#e8f5e9" stroke="#2e7d32" stroke-width="3" rx="8"/>
+              <text x="210" y="85" text-anchor="middle" font-size="14" font-weight="bold" fill="#1b5e20">Site A (Primary)</text>
+
+              <!-- VMware HA Cluster A -->
+              <rect x="60" y="100" width="300" height="140" fill="#fff9c4" stroke="#f57f17" stroke-width="2" stroke-dasharray="5,5" rx="5"/>
+              <text x="210" y="120" text-anchor="middle" font-size="12" font-weight="bold" fill="#f57f17">VMware HA Cluster</text>
+
+              <!-- Zabbix VM -->
+              <rect x="80" y="135" width="120" height="90" fill="#c8e6c9" stroke="#388e3c" stroke-width="2" rx="5"/>
+              <text x="140" y="155" text-anchor="middle" font-size="11" font-weight="bold">Zabbix Server</text>
+              <text x="140" y="172" text-anchor="middle" font-size="9" fill="#666">(Frontend + Server</text>
+              <text x="140" y="186" text-anchor="middle" font-size="9" fill="#666">+ Database)</text>
+              <text x="140" y="205" text-anchor="middle" font-size="9" fill="#2e7d32">vMotion enabled</text>
+
+              <!-- Other VMs placeholder -->
+              <rect x="220" y="135" width="120" height="90" fill="#e0e0e0" stroke="#616161" stroke-width="1" rx="5"/>
+              <text x="280" y="175" text-anchor="middle" font-size="10" fill="#666">Other VMs</text>
+              <text x="280" y="192" text-anchor="middle" font-size="9" fill="#666">in cluster</text>
+
+              <!-- NetApp Storage A -->
+              <rect x="80" y="270" width="260" height="130" fill="#e3f2fd" stroke="#1976d2" stroke-width="2" rx="5"/>
+              <text x="210" y="292" text-anchor="middle" font-size="12" font-weight="bold">NetApp Storage (Site A)</text>
+              <text x="210" y="312" text-anchor="middle" font-size="10" fill="#666">SVM: svm_zabbix_a</text>
+              <text x="210" y="332" text-anchor="middle" font-size="9" fill="#666">Volume: zabbix_data</text>
+              <text x="210" y="350" text-anchor="middle" font-size="9" fill="#666">• PostgreSQL database files</text>
+              <text x="210" y="365" text-anchor="middle" font-size="9" fill="#666">• /var/lib/postgresql</text>
+              <text x="210" y="380" text-anchor="middle" font-size="9" fill="#666">• SnapMirror source</text>
+
+              <!-- Site B -->
+              <rect x="420" y="60" width="340" height="360" fill="#fce4ec" stroke="#c62828" stroke-width="3" rx="8"/>
+              <text x="590" y="85" text-anchor="middle" font-size="14" font-weight="bold" fill="#b71c1c">Site B (DR)</text>
+
+              <!-- VMware HA Cluster B -->
+              <rect x="440" y="100" width="300" height="140" fill="#fff9c4" stroke="#f57f17" stroke-width="2" stroke-dasharray="5,5" rx="5"/>
+              <text x="590" y="120" text-anchor="middle" font-size="12" font-weight="bold" fill="#f57f17">VMware HA Cluster</text>
+
+              <!-- Standby Zabbix VM -->
+              <rect x="460" y="135" width="120" height="90" fill="#ffccbc" stroke="#d84315" stroke-width="2" rx="5"/>
+              <text x="520" y="155" text-anchor="middle" font-size="11" font-weight="bold">Zabbix Server</text>
+              <text x="520" y="172" text-anchor="middle" font-size="9" fill="#666">(DR Replica)</text>
+              <text x="520" y="186" text-anchor="middle" font-size="9" fill="#666">NOT HA node</text>
+              <text x="520" y="205" text-anchor="middle" font-size="9" fill="#d84315">Powered off until DR</text>
+
+              <!-- Other VMs placeholder -->
+              <rect x="600" y="135" width="120" height="90" fill="#e0e0e0" stroke="#616161" stroke-width="1" rx="5"/>
+              <text x="660" y="175" text-anchor="middle" font-size="10" fill="#666">Other VMs</text>
+              <text x="660" y="192" text-anchor="middle" font-size="9" fill="#666">in cluster</text>
+
+              <!-- NetApp Storage B -->
+              <rect x="460" y="270" width="260" height="130" fill="#e1f5fe" stroke="#0277bd" stroke-width="2" rx="5"/>
+              <text x="590" y="292" text-anchor="middle" font-size="12" font-weight="bold">NetApp Storage (Site B)</text>
+              <text x="590" y="312" text-anchor="middle" font-size="10" fill="#666">SVM: svm_zabbix_b</text>
+              <text x="590" y="332" text-anchor="middle" font-size="9" fill="#666">Volume: zabbix_data (replica)</text>
+              <text x="590" y="350" text-anchor="middle" font-size="9" fill="#666">• Replicated database files</text>
+              <text x="590" y="365" text-anchor="middle" font-size="9" fill="#666">• SnapMirror destination</text>
+              <text x="590" y="380" text-anchor="middle" font-size="9" fill="#d32f2f">• Read-only until failover</text>
+
+              <!-- SVM-DR Replication Arrow -->
+              <path d="M 340 335 L 460 335" stroke="#1976d2" stroke-width="3" fill="none" marker-end="url(#arrowblue2)"/>
+              <text x="400" y="325" text-anchor="middle" font-size="10" font-weight="bold" fill="#1976d2">SVM-DR</text>
+              <text x="400" y="340" text-anchor="middle" font-size="9" fill="#1976d2">Replication</text>
+
+              <!-- Connection between VMs and Storage -->
+              <path d="M 140 225 L 140 270" stroke="#666" stroke-width="2" fill="none"/>
+              <path d="M 520 225 L 520 270" stroke="#666" stroke-width="2" stroke-dasharray="3,3" fill="none"/>
+
+              <defs>
+                <marker id="arrowblue2" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto" markerUnits="strokeWidth">
+                  <path d="M0,0 L10,5 L0,10 L3,5 z" fill="#1976d2"/>
+                </marker>
+              </defs>
+
+              <rect x="50" y="440" width="700" height="50" fill="#fff3e0" stroke="#f57c00" stroke-width="2" rx="3"/>
+              <text x="60" y="458" font-size="11" font-weight="bold" fill="#e65100">Key Points:</text>
+              <text x="60" y="473" font-size="9" fill="#666">• VMware HA handles VM-level failures within each site • NetApp SVM-DR replicates storage between sites</text>
+              <text x="60" y="485" font-size="9" fill="#666">• Site B is a DR replica (NOT a Zabbix native HA node) • Site failover requires SVM-DR activation (manual process)</text>
+            </svg>
+        </div>
+
+        <h4>How This Architecture Works:</h4>
+        <ul>
+            <li><strong>Site A (Primary):</strong> Active Zabbix server running on VMware HA cluster with database on NetApp SVM</li>
+            <li><strong>Site B (DR):</strong> Replica Zabbix VM on separate VMware HA cluster with replicated NetApp SVM (powered off until needed)</li>
+            <li><strong>VMware HA:</strong> Provides automatic VM failover within each site (hardware failure protection)</li>
+            <li><strong>NetApp SVM-DR:</strong> Replicates entire storage virtual machine including volumes, LIFs, and configuration to Site B</li>
+            <li><strong>No Zabbix Native HA:</strong> This is a traditional DR model, not active-passive HA clustering</li>
+        </ul>
+
+        <h4>Configuration Steps:</h4>
+        <div class="info">
+            <p><strong>1. Build Zabbix Server at Site A</strong></p>
+            <ul>
+                <li>Deploy Zabbix VM on VMware HA cluster at Site A</li>
+                <li>Install Zabbix server, frontend, and PostgreSQL database</li>
+                <li>Store PostgreSQL data directory on NetApp-backed storage</li>
+                <li>Configure Zabbix normally (no HA clustering needed)</li>
+            </ul>
+
+            <p><strong>2. NetApp SVM-DR Setup</strong></p>
+            <ul>
+                <li>Create SVM relationship between Site A and Site B NetApp systems</li>
+                <li>Configure SnapMirror schedule (e.g., daily replication at midnight)</li>
+                <li>Ensure network connectivity between sites for replication</li>
+                <li>Test SVM-DR failover procedure during planned maintenance window</li>
+            </ul>
+
+            <p><strong>3. Site B DR Replica</strong></p>
+            <ul>
+                <li>Clone or replicate Zabbix VM configuration to Site B (keep powered off)</li>
+                <li>Document procedure to attach replicated SVM storage to Site B VM</li>
+                <li>Document DNS/network changes needed for failover</li>
+                <li>Keep Site B VM ready to power on and attach storage during DR event</li>
+            </ul>
+
+            <p><strong>4. Recovery Objectives</strong></p>
+            <ul>
+                <li><strong>RPO (Recovery Point Objective):</strong> ~24 hours (daily replication schedule)</li>
+                <li><strong>RTO (Recovery Time Objective):</strong> ~4 hours (manual SVM activation, mounting, service startup)</li>
+                <li>Potential data loss: Up to 24 hours of monitoring data</li>
+                <li>Acceptable for non-critical monitoring scenarios</li>
+            </ul>
+        </div>
+
+        <h4>Failover Scenarios:</h4>
+
+        <div class="warning">
+            <p><strong>Scenario 1: Host Failure Within Site A</strong></p>
+            <ul>
+                <li><strong>Automatic:</strong> VMware HA restarts Zabbix VM on another host in the cluster</li>
+                <li><strong>Downtime:</strong> Typically 2-5 minutes</li>
+                <li><strong>Data Loss:</strong> None</li>
+                <li><strong>Action Required:</strong> None (automatic)</li>
+            </ul>
+        </div>
+
+        <div class="error">
+            <p><strong>Scenario 2: Complete Site A Failure (Disaster Recovery)</strong></p>
+            <ol>
+                <li><strong>Activate SVM-DR:</strong> Break SnapMirror relationship and activate Site B SVM (manual NetApp procedure)</li>
+                <li><strong>Power On Site B VM:</strong> Start the Zabbix replica VM at Site B</li>
+                <li><strong>Mount Storage:</strong> Attach replicated SVM volume to Site B Zabbix VM</li>
+                <li><strong>Start Services:</strong> Start PostgreSQL and Zabbix server on Site B</li>
+                <li><strong>Update DNS/Network:</strong> Point agents and users to Site B infrastructure</li>
+                <li><strong>Verify Monitoring:</strong> Confirm agents reconnect and data collection resumes</li>
+            </ol>
+            <p><strong>RTO (Downtime):</strong> ~4 hours (manual process, requires coordination)</p>
+            <p><strong>RPO (Data Loss):</strong> Up to 24 hours of monitoring data since last replication</p>
+        </div>
+
+        <h4>Advantages of This Approach:</h4>
+        <ul>
+            <li>Leverages existing VMware and NetApp infrastructure</li>
+            <li>No additional storage replication software needed</li>
+            <li>SVM-DR includes all volume configurations and snapshots</li>
+            <li>Protects against site-level disasters</li>
+            <li>Proven, enterprise-grade technology stack</li>
+        </ul>
+
+        <h4>Limitations and Considerations:</h4>
+        <ul>
+            <li><strong>Manual Failover:</strong> SVM-DR activation is a manual process requiring ~4 hours</li>
+            <li><strong>Significant Data Loss Window:</strong> 24-hour RPO means losing up to a full day of monitoring data</li>
+            <li><strong>Not True HA:</strong> This is disaster recovery, not high availability</li>
+            <li><strong>Network Requirements:</strong> Adequate bandwidth between sites for daily replication</li>
+            <li><strong>Testing Complexity:</strong> DR testing requires planned outage and careful coordination</li>
+            <li><strong>Failback Complexity:</strong> Returning to Site A requires re-establishing SVM relationship and reverse replication</li>
+            <li><strong>Site B Not Active:</strong> Site B VM remains powered off, cannot serve as backup for queries or reports</li>
+        </ul>
+
+        <h3>5.5 Alternative: Dual Independent Zabbix Servers (Active-Active)</h3>
+
+        <p>For environments requiring full redundancy without shared infrastructure, deploying two completely independent Zabbix instances provides maximum resilience.</p>
+
+        <div class="svg-container">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 550">
+              <text x="400" y="25" text-anchor="middle" font-size="16" font-weight="bold" fill="#333">
+                Dual Independent Zabbix Servers (Active-Active)
+              </text>
+
+              <!-- Site A -->
+              <rect x="40" y="60" width="340" height="380" fill="#e8f5e9" stroke="#2e7d32" stroke-width="3" rx="8"/>
+              <text x="210" y="85" text-anchor="middle" font-size="14" font-weight="bold" fill="#1b5e20">Site A</text>
+
+              <!-- Zabbix Stack A -->
+              <rect x="70" y="105" width="280" height="80" fill="#c8e6c9" stroke="#388e3c" stroke-width="2" rx="5"/>
+              <text x="210" y="127" text-anchor="middle" font-size="12" font-weight="bold">Zabbix Frontend A</text>
+              <text x="210" y="145" text-anchor="middle" font-size="9" fill="#666">Web interface for Site A</text>
+              <text x="210" y="160" text-anchor="middle" font-size="9" fill="#2e7d32">https://zabbix-a.company.com</text>
+              <text x="210" y="175" text-anchor="middle" font-size="9" fill="#2e7d32">⚙️ ACTIVE</text>
+
+              <rect x="70" y="200" width="280" height="80" fill="#a5d6a7" stroke="#388e3c" stroke-width="2" rx="5"/>
+              <text x="210" y="222" text-anchor="middle" font-size="12" font-weight="bold">Zabbix Server A</text>
+              <text x="210" y="240" text-anchor="middle" font-size="9" fill="#666">Collects from agents</text>
+              <text x="210" y="255" text-anchor="middle" font-size="9" fill="#2e7d32">NOT in HA cluster</text>
+              <text x="210" y="270" text-anchor="middle" font-size="9" fill="#2e7d32">⚙️ ACTIVE</text>
+
+              <rect x="70" y="295" width="280" height="125" fill="#e3f2fd" stroke="#1976d2" stroke-width="2" rx="5"/>
+              <text x="210" y="317" text-anchor="middle" font-size="12" font-weight="bold">PostgreSQL A</text>
+              <text x="210" y="335" text-anchor="middle" font-size="9" fill="#666">Database for Site A</text>
+              <text x="210" y="352" text-anchor="middle" font-size="9" fill="#666">• Independent database</text>
+              <text x="210" y="367" text-anchor="middle" font-size="9" fill="#666">• Local backups</text>
+              <text x="210" y="382" text-anchor="middle" font-size="9" fill="#666">• No replication to Site B</text>
+              <text x="210" y="397" text-anchor="middle" font-size="9" fill="#1976d2">⚙️ ACTIVE</text>
+
+              <!-- Site B -->
+              <rect x="420" y="60" width="340" height="380" fill="#e3f2fd" stroke="#0277bd" stroke-width="3" rx="8"/>
+              <text x="590" y="85" text-anchor="middle" font-size="14" font-weight="bold" fill="#01579b">Site B</text>
+
+              <!-- Zabbix Stack B -->
+              <rect x="450" y="105" width="280" height="80" fill="#90caf9" stroke="#1976d2" stroke-width="2" rx="5"/>
+              <text x="590" y="127" text-anchor="middle" font-size="12" font-weight="bold">Zabbix Frontend B</text>
+              <text x="590" y="145" text-anchor="middle" font-size="9" fill="#666">Web interface for Site B</text>
+              <text x="590" y="160" text-anchor="middle" font-size="9" fill="#01579b">https://zabbix-b.company.com</text>
+              <text x="590" y="175" text-anchor="middle" font-size="9" fill="#01579b">⚙️ ACTIVE</text>
+
+              <rect x="450" y="200" width="280" height="80" fill="#64b5f6" stroke="#1976d2" stroke-width="2" rx="5"/>
+              <text x="590" y="222" text-anchor="middle" font-size="12" font-weight="bold">Zabbix Server B</text>
+              <text x="590" y="240" text-anchor="middle" font-size="9" fill="#666">Collects from agents</text>
+              <text x="590" y="255" text-anchor="middle" font-size="9" fill="#01579b">NOT in HA cluster</text>
+              <text x="590" y="270" text-anchor="middle" font-size="9" fill="#01579b">⚙️ ACTIVE</text>
+
+              <rect x="450" y="295" width="280" height="125" fill="#fff3e0" stroke="#f57c00" stroke-width="2" rx="5"/>
+              <text x="590" y="317" text-anchor="middle" font-size="12" font-weight="bold">PostgreSQL B</text>
+              <text x="590" y="335" text-anchor="middle" font-size="9" fill="#666">Database for Site B</text>
+              <text x="590" y="352" text-anchor="middle" font-size="9" fill="#666">• Independent database</text>
+              <text x="590" y="367" text-anchor="middle" font-size="9" fill="#666">• Local backups</text>
+              <text x="590" y="382" text-anchor="middle" font-size="9" fill="#666">• No replication to Site A</text>
+              <text x="590" y="397" text-anchor="middle" font-size="9" fill="#f57c00">⚙️ ACTIVE</text>
+
+              <!-- Monitored Hosts -->
+              <rect x="100" y="460" width="600" height="60" fill="#f5f5f5" stroke="#757575" stroke-width="2" rx="5"/>
+              <text x="400" y="482" text-anchor="middle" font-size="11" font-weight="bold">Monitored Infrastructure</text>
+              <text x="400" y="500" text-anchor="middle" font-size="10" fill="#666">Servers, Network Devices, Applications</text>
+              <text x="400" y="515" text-anchor="middle" font-size="9" fill="#d32f2f">Each host monitored by BOTH Zabbix servers</text>
+
+              <!-- Arrows from hosts to servers -->
+              <path d="M 280 460 L 210 280" stroke="#388e3c" stroke-width="2" fill="none" marker-end="url(#arrowgreen)"/>
+              <path d="M 520 460 L 590 280" stroke="#1976d2" stroke-width="2" fill="none" marker-end="url(#arrowblue3)"/>
+
+              <!-- No replication arrow with X -->
+              <path d="M 350 300 L 450 300" stroke="#d32f2f" stroke-width="2" stroke-dasharray="5,5" fill="none"/>
+              <text x="400" y="292" text-anchor="middle" font-size="12" font-weight="bold" fill="#d32f2f">✗</text>
+              <text x="400" y="320" text-anchor="middle" font-size="9" fill="#d32f2f">No replication</text>
+
+              <defs>
+                <marker id="arrowgreen" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto" markerUnits="strokeWidth">
+                  <path d="M0,0 L10,5 L0,10 L3,5 z" fill="#388e3c"/>
+                </marker>
+                <marker id="arrowblue3" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto" markerUnits="strokeWidth">
+                  <path d="M0,0 L10,5 L0,10 L3,5 z" fill="#1976d2"/>
+                </marker>
+              </defs>
+            </svg>
+        </div>
+
+        <h4>Architecture Principles:</h4>
+        <ul>
+            <li><strong>Complete Independence:</strong> No shared components between sites</li>
+            <li><strong>Duplicate Monitoring:</strong> Both servers monitor the same infrastructure</li>
+            <li><strong>No HA Clustering:</strong> Each Zabbix server operates standalone</li>
+            <li><strong>Active-Active:</strong> Both sites actively collect and store metrics</li>
+            <li><strong>Configuration Duplication:</strong> Hosts, templates, and triggers must be configured on both servers</li>
+        </ul>
+
+        <h4>Configuration Approach:</h4>
+        <div class="success">
+            <p><strong>Option 1: Manual Configuration Duplication</strong></p>
+            <ul>
+                <li>Maintain identical configurations on both servers manually</li>
+                <li>Use checklists for changes to ensure both sites are updated</li>
+                <li>Simple but requires discipline</li>
+            </ul>
+
+            <p><strong>Option 2: API-Based Configuration Sync</strong></p>
+            <pre><code># Example: Export config from Site A, import to Site B
+# Export templates
+curl -X POST https://zabbix-a.company.com/api_jsonrpc.php \
+  -d '{"jsonrpc":"2.0","method":"configuration.export","params":{...}}'
+
+# Import to Site B
+curl -X POST https://zabbix-b.company.com/api_jsonrpc.php \
+  -d '{"jsonrpc":"2.0","method":"configuration.import","params":{...}}'</code></pre>
+
+            <p><strong>Option 3: Git-Based Configuration Management</strong></p>
+            <ul>
+                <li>Export Zabbix configurations to YAML/JSON</li>
+                <li>Store in Git repository</li>
+                <li>Deploy to both sites via CI/CD or automation</li>
+                <li>Recommended for environments with frequent changes</li>
+            </ul>
+        </div>
+
+        <h4>Agent Configuration:</h4>
+        <p>Agents can report to both servers using either passive or active mode:</p>
+
+        <pre><code># Option 1: Passive agents with both servers
+# /etc/zabbix/zabbix_agentd.conf
+Server=192.168.1.10,192.168.2.10
+# Both Zabbix servers can poll this agent
+
+# Option 2: Active agents with both servers
+ServerActive=192.168.1.10,192.168.2.10
+# Agent sends data to both servers</code></pre>
+
+        <div class="warning">
+            <p><strong>Important:</strong> When using passive agents with multiple servers, the agent accepts connections from both. Ensure firewall rules permit both Zabbix server IPs.</p>
+        </div>
+
+        <h4>Advantages of Dual Independent Servers:</h4>
+        <ul>
+            <li><strong>Maximum Redundancy:</strong> Complete failure of one site doesn't affect the other</li>
+            <li><strong>No Shared Dependencies:</strong> Each site fully self-contained</li>
+            <li><strong>Simplified Architecture:</strong> No clustering, replication, or HA complexity</li>
+            <li><strong>Independent Operations:</strong> Maintenance on one site doesn't impact the other</li>
+            <li><strong>Historical Data Preservation:</strong> Both sites retain complete historical data</li>
+            <li><strong>No Split-Brain Risk:</strong> No coordination needed between servers</li>
+        </ul>
+
+        <h4>Disadvantages and Considerations:</h4>
+        <ul>
+            <li><strong>Double the Resources:</strong> Requires full infrastructure at both sites</li>
+            <li><strong>Configuration Drift Risk:</strong> Manual changes can cause inconsistencies</li>
+            <li><strong>Duplicate Alerts:</strong> Both servers will generate alerts (requires alert routing)</li>
+            <li><strong>Monitoring Load:</strong> Agents polled by both servers (doubled network/CPU)</li>
+            <li><strong>User Training:</strong> Teams must understand which instance to use for which purpose</li>
+            <li><strong>Maintenance Overhead:</strong> Changes must be applied to both servers</li>
+        </ul>
+
+        <h4>Alert Management Strategies:</h4>
+        <div class="info">
+            <p><strong>Strategy 1: Geographic Routing</strong></p>
+            <ul>
+                <li>Site A Zabbix sends alerts to team members at Location A</li>
+                <li>Site B Zabbix sends alerts to team members at Location B</li>
+                <li>Ensures alerts still work if one site is down</li>
+            </ul>
+
+            <p><strong>Strategy 2: Primary/Secondary Alerting</strong></p>
+            <ul>
+                <li>Site A configured with full alerting</li>
+                <li>Site B alerts disabled or sent to secondary channel (e.g., Slack instead of email)</li>
+                <li>Manual switchover of alerting during Site A failure</li>
+            </ul>
+
+            <p><strong>Strategy 3: External Alert Deduplication</strong></p>
+            <ul>
+                <li>Both sites send alerts to external system (PagerDuty, Opsgenie, etc.)</li>
+                <li>External system deduplicates based on incident fingerprint</li>
+                <li>Most sophisticated but requires external service</li>
+            </ul>
+        </div>
+
+        <h4>When to Use This Architecture:</h4>
+        <ul>
+            <li><strong>Critical Monitoring:</strong> Monitoring system cannot be unavailable</li>
+            <li><strong>Regulatory Requirements:</strong> Complete redundancy mandated</li>
+            <li><strong>Geographic Distribution:</strong> Teams at both locations need local access</li>
+            <li><strong>Disaster Recovery:</strong> Must survive complete site loss with zero data loss</li>
+            <li><strong>Budget Available:</strong> Resources for duplicate infrastructure</li>
+        </ul>
+
+        <h4>When NOT to Use This Architecture:</h4>
+        <ul>
+            <li>Single data center environment</li>
+            <li>Small team unable to maintain duplicate configurations</li>
+            <li>Monitoring is not business-critical</li>
+            <li>Resource constraints (prefer native HA instead)</li>
+        </ul>
+
+        <h3>5.6 Comparison: VMware HA + SVM-DR vs. Dual Independent</h3>
+
+        <table style="width:100%; border-collapse: collapse; margin: 20px 0;">
+            <thead>
+                <tr style="background-color: #1976d2; color: white;">
+                    <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Aspect</th>
+                    <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">VMware HA + NetApp SVM-DR</th>
+                    <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Dual Independent Servers</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;"><strong>Complexity</strong></td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">Moderate (infrastructure-level)</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">Low (application-level)</td>
+                </tr>
+                <tr style="background-color: #f5f5f5;">
+                    <td style="padding: 10px; border: 1px solid #ddd;"><strong>Resource Usage</strong></td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">Lower (single active database)</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">Higher (double infrastructure)</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;"><strong>Data Loss (RPO)</strong></td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">Minutes (replication interval)</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">None (both active)</td>
+                </tr>
+                <tr style="background-color: #f5f5f5;">
+                    <td style="padding: 10px; border: 1px solid #ddd;"><strong>Failover Time (RTO)</strong></td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">10-30 minutes (manual)</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">0 (already active)</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;"><strong>Configuration Sync</strong></td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">Automatic (shared database)</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">Manual or scripted</td>
+                </tr>
+                <tr style="background-color: #f5f5f5;">
+                    <td style="padding: 10px; border: 1px solid #ddd;"><strong>Alert Duplication</strong></td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">None (single active)</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">Requires management</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;"><strong>Historical Data</strong></td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">Replicated to DR site</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">Complete on both sites</td>
+                </tr>
+                <tr style="background-color: #f5f5f5;">
+                    <td style="padding: 10px; border: 1px solid #ddd;"><strong>Testing Difficulty</strong></td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">High (requires failover test)</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">Low (always running)</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;"><strong>Best For</strong></td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">Existing VMware/NetApp infrastructure</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">Maximum availability requirements</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>5.7 Recommended Approach Decision Tree</h3>
+
+        <div class="info">
+            <h4>Choose VMware HA + NetApp SVM-DR if:</h4>
+            <ul>
+                <li>You already have VMware and NetApp infrastructure</li>
+                <li>Single source of truth for configuration is important</li>
+                <li>Acceptable RPO is covered by the SnapMirror schedule</li>
+                <li>Manual failover for site disasters is acceptable</li>
+                <li>Want to minimize resource usage</li>
+            </ul>
+        </div>
+
+        <div class="success">
+            <h4>Choose Dual Independent Servers if:</h4>
+            <ul>
+                <li>Zero data loss (RPO = 0) is required</li>
+                <li>Monitoring must survive complete site failure transparently</li>
+                <li>Have resources for duplicate infrastructure</li>
+                <li>Team can manage configuration synchronization</li>
+                <li>Geographic distribution of teams requires local access</li>
+            </ul>
+        </div>
+
+        <h3>5.8 Video Resources</h3>
+        <ul>
+            <li><strong>"Build Zabbix Server HA Cluster in 10 Minutes":</strong> <a href="https://blog.zabbix.com/build-zabbix-server-ha-cluster-in-10-minutes-by-kaspars-mednis-zabbix-summit-online-2021/18155/" target="_blank">https://blog.zabbix.com/build-zabbix-server-ha-cluster-in-10-minutes...</a></li>
+            <li><strong>"Zabbix 6.0 Native High Availability":</strong> Search for Kaspars Mednis Zabbix Summit presentation</li>
+            <li><strong>"Running Zabbix with PostgreSQL and pg_auto_failover":</strong> <a href="https://blog.zabbix.com/running-zabbix-with-postgresql-and-pg-auto-failover/31026/" target="_blank">https://blog.zabbix.com/running-zabbix-with-postgresql-and-pg-auto-failover/31026/</a></li>
+            <li><strong>Official HA Documentation:</strong> <a href="https://www.zabbix.com/documentation/current/en/manual/concepts/server/ha" target="_blank">https://www.zabbix.com/documentation/current/en/manual/concepts/server/ha</a></li>
+            <li><strong>Zabbix 101 Course:</strong> Covers HA concepts at introductory level</li>
+        </ul>
+
+        <hr>
+
+        <h2 id="section6">6. Zabbix Server Configuration</h2>
+
+        <h3>6.1 Critical Configuration Parameters</h3>
+
+        <p>The <code>zabbix_server.conf</code> file controls server behaviour and performance. Proper configuration is essential for reliable operation.</p>
+
+        <p><strong>Location:</strong> <code>/etc/zabbix/zabbix_server.conf</code></p>
+
+        <h3>6.2 Essential Parameters</h3>
+
+        <h4>Database Connection:</h4>
+        <pre><code>DBHost=localhost
+DBName=zabbix
+DBUser=zabbix
+DBPassword=&lt;secure_password&gt;
+DBPort=5432</code></pre>
+
+        <h4>Process Configuration:</h4>
+        <pre><code># Start with these, tune based on monitoring
+StartPollers=10           # Passive checks
+StartPollersUnreachable=3 # Unreachable hosts
+StartTrappers=5           # Active agents, traps
+StartPingers=3            # ICMP checks
+StartDiscoverers=3        # Network discovery
+StartHTTPPollers=5        # HTTP agent checks
+StartTimers=2             # Trigger calculations
+StartEscalators=2         # Escalation processing</code></pre>
+
+        <h4>Cache Sizes:</h4>
+        <pre><code># Adjust based on your environment size
+CacheSize=32M             # Configuration cache
+HistoryCacheSize=32M      # History cache (increase for high data collection rate)
+HistoryIndexCacheSize=16M # History index cache
+TrendCacheSize=16M        # Trend cache
+ValueCacheSize=64M        # Item value cache</code></pre>
+
+        <h4>Timeouts and Intervals:</h4>
+        <pre><code>Timeout=30                # Item collection timeout
+TrapperTimeout=300        # Trapper process timeout
+UnreachablePeriod=45      # Mark host unavailable after 45s
+UnavailableDelay=60       # Check unavailable hosts every 60s</code></pre>
+
+        <h3>6.3 Common Configuration Mistakes</h3>
+
+        <div class="error">
+            <h4>❌ Inadequate Cache Sizes</h4>
+            <ul>
+                <li>Default values too small for production</li>
+                <li>Causes "history cache is full" warnings</li>
+                <li>Data collection delays and gaps</li>
+                <li><strong>Solution:</strong> Monitor cache usage and increase as needed</li>
+            </ul>
+        </div>
+
+        <div class="error">
+            <h4>❌ Insufficient Process Counts</h4>
+            <ul>
+                <li>Too few pollers for number of items</li>
+                <li>Queue building up</li>
+                <li>Delayed metric collection</li>
+                <li><strong>Solution:</strong> Monitor internal Zabbix metrics, increase pollers</li>
+            </ul>
+        </div>
+
+        <div class="error">
+            <h4>❌ Missing Tuning</h4>
+            <ul>
+                <li>Using default configuration in production</li>
+                <li>Not adjusting for environment size</li>
+                <li>Performance degradation under load</li>
+                <li><strong>Solution:</strong> Baseline performance, tune incrementally</li>
+            </ul>
+        </div>
+
+        <h3>6.4 Log Configuration</h3>
+
+        <h4>Critical Settings:</h4>
+        <pre><code>LogFile=/var/log/zabbix/zabbix_server.log
+LogFileSize=0             # 0 = unlimited (use logrotate instead)
+DebugLevel=3              # 3 = warnings (increase to 4 for troubleshooting)
+LogSlowQueries=3000       # Log queries taking > 3 seconds</code></pre>
+
+        <div class="warning">
+            <p><strong>Important:</strong> Setting <code>LogFileSize=0</code> means the built-in log rotation is disabled. You MUST configure logrotate to prevent disk space issues (see Section 7).</p>
+        </div>
+
+        <h3>6.5 Monitoring Server Health</h3>
+
+        <p>Add these to monitor Zabbix itself:</p>
+
+        <h4>Items to Monitor:</h4>
+        <ul>
+            <li><code>zabbix[queue]</code> - Items waiting to be processed</li>
+            <li><code>zabbix[process,busy]</code> - Process busy percentage</li>
+            <li><code>zabbix[wcache,history,pused]</code> - History cache usage</li>
+            <li><code>zabbix[vcache,buffer,pused]</code> - Value cache usage</li>
+        </ul>
+
+        <h4>Healthy Thresholds:</h4>
+        <ul>
+            <li>Queue < 100 items</li>
+            <li>Process busy < 75%</li>
+            <li>Cache usage < 80%</li>
+        </ul>
+
+        <h3>6.6 Configuration Validation</h3>
+
+        <h4>Before restarting Zabbix server:</h4>
+        <pre><code># Test configuration syntax
+zabbix_server -t
+
+# Check for specific parameter
+grep -v "^#" /etc/zabbix/zabbix_server.conf | grep -v "^$"
+
+# Restart service
+systemctl restart zabbix-server
+
+# Verify startup
+systemctl status zabbix-server
+tail -f /var/log/zabbix/zabbix_server.log</code></pre>
+
+        <h3>6.7 Documentation Resources</h3>
+        <ul>
+            <li><strong>"Zabbix 7.0 Performance Tuning Best Practices":</strong> Search for Zabbix Summit 2024 presentations</li>
+            <li><strong>"Performance Tuning Guide":</strong> <a href="https://www.zabbix.com/documentation/current/en/manual/installation/requirements" target="_blank">https://www.zabbix.com/documentation/current/en/manual/installation/requirements</a> (see hardware requirements and sizing)</li>
+            <li><strong>Server Configuration Reference:</strong> <a href="https://www.zabbix.com/documentation/current/en/manual/appendix/config/zabbix_server" target="_blank">https://www.zabbix.com/documentation/current/en/manual/appendix/config/zabbix_server</a></li>
+            <li><strong>Zabbix 101 Course:</strong> Covers server configuration fundamentals</li>
+        </ul>
+
+        <hr>
+
+        <h2 id="section7">7. Common Deployment Issues</h2>
+
+        <h3>7.1 Issue: Inconsistent Agent Configuration Files</h3>
+
+        <h4>Symptoms:</h4>
+        <ul>
+            <li>Agents showing as unavailable intermittently</li>
+            <li>"Cannot parse configuration file" errors</li>
+            <li>Some metrics working, others failing</li>
+        </ul>
+
+        <h4>Root Causes:</h4>
+        <ul>
+            <li>Syntax errors (spaces around <code>=</code>, comments in wrong places)</li>
+            <li>Inconsistent parameters across agents</li>
+            <li>Copy/paste errors</li>
+            <li>Missing required parameters</li>
+        </ul>
+
+        <h4>Detection:</h4>
+        <pre><code># Validate agent config
+zabbix_agentd -t
+
+# Check for syntax patterns that might be problematic
+grep -E "^[^#]*=" /etc/zabbix/zabbix_agentd.conf | grep " = "
+
+# Look for empty parameters
+grep -E "^[A-Z].*=$" /etc/zabbix/zabbix_agentd.conf</code></pre>
+
+        <h4>Resolution:</h4>
+        <ol>
+            <li>Create standardised configuration template</li>
+            <li>Use configuration management (Ansible, Puppet)</li>
+            <li>Validate syntax before deployment</li>
+            <li>Document required vs optional parameters</li>
+            <li>Test agent connection after any change</li>
+        </ol>
+
+        <h3>8.2 Issue: Wrong Agent Type Configured</h3>
+
+        <h4>Symptoms:</h4>
+        <ul>
+            <li>Agents work but monitoring seems suboptimal</li>
+            <li>Remote commands not functioning</li>
+            <li>Unnecessary complexity in templates</li>
+            <li>Active agents used everywhere</li>
+            <li><strong>High memory usage on Windows servers</strong></li>
+        </ul>
+
+        <h4>Root Cause:</h4>
+        <ul>
+            <li>Misunderstanding of active vs passive agents</li>
+            <li>Assumption that active is "better" or "newer"</li>
+            <li>Copying configuration without understanding</li>
+            <li><strong>Not recognising Windows Event Log overhead</strong></li>
+        </ul>
+
+        <h4>Detection:</h4>
+        <ul>
+            <li>Review agent configs: Check for <code>ServerActive=</code> vs <code>Server=</code></li>
+            <li>Review items in frontend: Check item type (Active vs Passive)</li>
+            <li>Check templates: Are they using active agent templates?</li>
+            <li><strong>Monitor Windows memory usage:</strong> Check Eventlog service RAM</li>
+        </ul>
+
+        <h4>Resolution:</h4>
+        <ol>
+            <li><strong>Assess each agent's actual requirements</strong>
+                <ul>
+                    <li>Is it behind NAT/firewall? → Consider active</li>
+                    <li>Is it directly reachable? → Use passive</li>
+                    <li>Need remote commands? → Must use passive</li>
+                    <li><strong>Windows Event Log monitoring?</strong> → Avoid active or use WEF</li>
+                </ul>
+            </li>
+            <li><strong>Standardise on passive agents</strong> for most hosts</li>
+            <li><strong>Update templates</strong> to use "Zabbix agent" items (passive)</li>
+            <li><strong>Re-deploy agent configurations</strong> with correct mode</li>
+            <li><strong>Update items in frontend</strong> to match new agent mode</li>
+        </ol>
+
+        <h4>Migration Steps:</h4>
+        <pre><code># Example agent config change: Active → Passive
+# BEFORE (Active):
+# ServerActive=192.168.1.10:10051
+# Hostname=server01.example.com.au
+
+# AFTER (Passive):
+Server=192.168.1.10,192.168.1.11
+ListenIP=0.0.0.0
+ListenPort=10050
+Hostname=server01.example.com.au</code></pre>
+
+        <h3>8.3 Issue: Unnecessary Proxies Deployed</h3>
+
+        <h4>Symptoms:</h4>
+        <ul>
+            <li>Proxies located adjacent to Zabbix server</li>
+            <li>Proxies in same subnet/data centre as server</li>
+            <li>Additional databases and complexity</li>
+            <li>No geographic or network isolation justification</li>
+        </ul>
+
+        <h4>Root Cause:</h4>
+        <ul>
+            <li>Misunderstanding of proxy purpose</li>
+            <li>Assumption that proxies are always beneficial</li>
+            <li>Copying architecture from different environment</li>
+        </ul>
+
+        <h4>Detection:</h4>
+        <ul>
+            <li>Map proxy locations relative to server</li>
+            <li>Review network latency between proxies and server</li>
+            <li>Assess whether proxies provide any benefit</li>
+            <li>Check if hosts could be monitored directly</li>
+        </ul>
+
+        <h4>Resolution:</h4>
+        <ol>
+            <li><strong>Audit proxy deployment justification</strong>
+                <ul>
+                    <li>Document why each proxy exists</li>
+                    <li>Identify proxies providing no benefit</li>
+                </ul>
+            </li>
+            <li><strong>Plan migration to direct monitoring</strong>
+                <ul>
+                    <li>Test direct server → agent connectivity</li>
+                    <li>Prepare agent configuration changes</li>
+                    <li>Schedule migration windows</li>
+                </ul>
+            </li>
+            <li><strong>Migrate hosts to direct monitoring</strong>
+                <pre><code>Frontend: Configuration → Hosts → Select hosts
+Change "Monitored by proxy" to "No proxy"
+Update agent configs to point to server</code></pre>
+            </li>
+            <li><strong>Decommission unnecessary proxies</strong>
+                <ul>
+                    <li>Stop proxy services</li>
+                    <li>Remove from frontend</li>
+                    <li>Backup and delete proxy databases</li>
+                    <li>Decommission proxy servers</li>
+                </ul>
+            </li>
+            <li><strong>Document architecture decision</strong>
+                <ul>
+                    <li>Clear criteria for when to add proxies in future</li>
+                    <li>Approval process for proxy deployment</li>
+                </ul>
+            </li>
+        </ol>
+
+        <h3>8.4 Issue: Unreliable HA Implementation</h3>
+
+        <h4>Symptoms:</h4>
+        <ul>
+            <li>PostgreSQL cluster fails to failover properly</li>
+            <li>Database becomes inconsistent</li>
+            <li>Split-brain scenarios</li>
+            <li>Monitoring unavailable during failures</li>
+        </ul>
+
+        <h4>Root Cause:</h4>
+        <ul>
+            <li>Complex HA setup without expertise</li>
+            <li>Missing witness node for quorum</li>
+            <li>Two-node PostgreSQL cluster without proper coordination</li>
+            <li>Over-engineered solution</li>
+        </ul>
+
+        <h4>Detection:</h4>
+        <ul>
+            <li>Test failover procedures</li>
+            <li>Review cluster configuration</li>
+            <li>Check for witness/arbiter nodes</li>
+            <li>Verify quorum mechanism</li>
+        </ul>
+
+        <h4>Resolution Options:</h4>
+
+        <div class="success">
+            <h4>Option A: Simplify to Native HA</h4>
+            <ol>
+                <li>Deploy two self-contained Zabbix servers</li>
+                <li>Each with dedicated PostgreSQL instance</li>
+                <li>Use Zabbix native HA for coordination</li>
+                <li>Rely on backups/snapshots for recovery</li>
+                <li>Accept brief outage during maintenance</li>
+            </ol>
+
+            <h4>Option B: Properly Implement PostgreSQL HA</h4>
+            <ol>
+                <li>Add witness node for quorum (3-node setup)</li>
+                <li>Implement pg_auto_failover or Patroni</li>
+                <li>Use HAProxy for connection routing</li>
+                <li>Ensure proper testing of failover</li>
+                <li>Document recovery procedures</li>
+            </ol>
+
+            <h4>Option C: Use Existing Infrastructure</h4>
+            <ol>
+                <li>Leverage NetApp SnapMirror</li>
+                <li>VMware HA/DRS for VM failover</li>
+                <li>Regular backups and tested recovery</li>
+                <li>Simpler operational model</li>
+            </ol>
+        </div>
+
+        <h3>8.5 Issue: Server Configuration Not Tuned</h3>
+
+        <h4>Symptoms:</h4>
+        <ul>
+            <li>Queue building up</li>
+            <li>Slow data collection</li>
+            <li>"History cache full" warnings</li>
+            <li>High CPU usage on server</li>
+        </ul>
+
+        <h4>Root Cause:</h4>
+        <ul>
+            <li>Using default configuration</li>
+            <li>Not tuned for environment size</li>
+            <li>Inadequate cache sizes</li>
+            <li>Insufficient process counts</li>
+        </ul>
+
+        <h4>Detection:</h4>
+        <pre><code># Check internal Zabbix items
+- zabbix[queue]
+- zabbix[process,&lt;type&gt;,busy]
+- zabbix[wcache,*,pused]
+
+# Review server log for warnings
+grep -i "warn\|error" /var/log/zabbix/zabbix_server.log</code></pre>
+
+        <h4>Resolution:</h4>
+        <ol>
+            <li><strong>Baseline current performance</strong></li>
+            <li><strong>Increase cache sizes</strong> incrementally</li>
+            <li><strong>Add more pollers</strong> if queue builds up</li>
+            <li><strong>Monitor after each change</strong></li>
+            <li><strong>Document final tuned configuration</strong></li>
+        </ol>
+
+        <h3>8.6 Issue: Logs Fill Disk</h3>
+
+        <h4>Symptoms:</h4>
+        <ul>
+            <li>Server stops functioning</li>
+            <li>"No space left on device" errors</li>
+            <li>Large log files (multi-GB)</li>
+            <li>Zabbix service fails to start</li>
+        </ul>
+
+        <h4>Root Cause:</h4>
+        <ul>
+            <li>No logrotate configuration</li>
+            <li>Logrotate not functioning</li>
+            <li>Logrotate misconfigured</li>
+        </ul>
+
+        <h4>Immediate Resolution:</h4>
+        <pre><code># Free space immediately
+sudo truncate -s 0 /var/log/zabbix/zabbix_server.log
+sudo systemctl restart zabbix-server
+
+# Implement proper rotation (see Section 7)</code></pre>
+
+        <h4>Prevention:</h4>
+        <ol>
+            <li>Configure logrotate properly</li>
+            <li>Test rotation regularly</li>
+            <li>Monitor disk space</li>
+            <li>Set up alerts for disk usage</li>
+        </ol>
+
+        <hr>
+
+        <h2 id="section8">8. Maintenance Best Practices</h2>
+
+        <h3>8.1 Regular Maintenance Tasks</h3>
+
+        <h4>Daily:</h4>
+        <ul>
+            <li>Monitor disk space usage</li>
+            <li>Check queue size</li>
+            <li>Review critical alerts</li>
+            <li>Verify all agents are connected</li>
+        </ul>
+
+        <h4>Weekly:</h4>
+        <ul>
+            <li>Review performance metrics</li>
+            <li>Check for configuration drift</li>
+            <li>Verify backups completed</li>
+            <li>Review slow queries</li>
+        </ul>
+
+        <h4>Monthly:</h4>
+        <ul>
+            <li>Database maintenance (vacuum, analyse)</li>
+            <li>Review and update templates</li>
+            <li>Audit user access</li>
+            <li>Test backup restoration</li>
+            <li>Review capacity trends</li>
+        </ul>
+
+        <h4>Quarterly:</h4>
+        <ul>
+            <li>Test failover procedures</li>
+            <li>Review and update documentation</li>
+            <li>Capacity planning assessment</li>
+            <li>Security updates and patches</li>
+        </ul>
+
+        <h3>8.2 Backup Strategy</h3>
+
+        <h4>Critical Items to Back Up:</h4>
+        <ul>
+            <li>Zabbix database (full backup)</li>
+            <li>Configuration files:
+                <ul>
+                    <li><code>/etc/zabbix/zabbix_server.conf</code></li>
+                    <li><code>/etc/zabbix/zabbix_agentd.conf</code> (on each host)</li>
+                    <li><code>/etc/zabbix/web/zabbix.conf.php</code></li>
+                </ul>
+            </li>
+            <li>Custom scripts and external checks</li>
+            <li>SSL certificates (if used)</li>
+        </ul>
+
+        <h4>Backup Schedule:</h4>
+        <ul>
+            <li>Database: Daily full, hourly incremental</li>
+            <li>Config files: After each change</li>
+            <li>Test restoration: Monthly</li>
+        </ul>
+
+        <h4>Use NetApp SnapMirror:</h4>
+        <ul>
+            <li>VM-level snapshots</li>
+            <li>Asynchronous replication to secondary DC</li>
+            <li>Rapid recovery capability</li>
+        </ul>
+
+        <h3>8.3 Change Management</h3>
+
+        <h4>Before Making Changes:</h4>
+        <ol>
+            <li>Document current state</li>
+            <li>Test in non-production (if available)</li>
+            <li>Schedule maintenance window</li>
+            <li>Notify stakeholders</li>
+            <li>Prepare rollback plan</li>
+        </ol>
+
+        <h4>After Changes:</h4>
+        <ol>
+            <li>Verify functionality</li>
+            <li>Monitor for issues</li>
+            <li>Update documentation</li>
+            <li>Review lessons learned</li>
+        </ol>
+
+        <h3>8.4 Documentation Requirements</h3>
+
+        <h4>Maintain Current Documentation for:</h4>
+        <ul>
+            <li>Architecture diagrams</li>
+            <li>Network topology</li>
+            <li>Server configurations</li>
+            <li>Agent deployment standards</li>
+            <li>Escalation procedures</li>
+            <li>Recovery procedures</li>
+            <li>Known issues and workarounds</li>
+        </ul>
+
+        <h3>8.5 Skill Development</h3>
+
+        <h4>Recommended Training Path:</h4>
+        <ol>
+            <li><strong>Complete Zabbix 101 course</strong> (<a href="https://academy.zabbix.com/courses/zabbix-101" target="_blank">https://academy.zabbix.com/courses/zabbix-101</a>)</li>
+            <li>Review official Zabbix documentation</li>
+            <li>Obtain Zabbix Certified Specialist (if budget allows)</li>
+            <li>Practice in lab environment</li>
+            <li>Learn PostgreSQL basics</li>
+            <li>Understand Linux system administration</li>
+        </ol>
+
+        <hr>
+
+        <h2 id="section9">9. Additional Resources</h2>
+
+        <h3>9.1 Official Resources</h3>
+
+        <h4>Documentation:</h4>
+        <ul>
+            <li><strong>Zabbix Documentation:</strong> <a href="https://www.zabbix.com/documentation/current/en/manual" target="_blank">https://www.zabbix.com/documentation/current/en/manual</a></li>
+            <li><strong>Best Practices:</strong> <a href="https://www.zabbix.com/documentation/current/en/manual/best_practices" target="_blank">https://www.zabbix.com/documentation/current/en/manual/best_practices</a></li>
+            <li><strong>API Documentation:</strong> <a href="https://www.zabbix.com/documentation/current/en/manual/api" target="_blank">https://www.zabbix.com/documentation/current/en/manual/api</a></li>
+        </ul>
+
+        <h4>Training:</h4>
+        <ul>
+            <li><strong>Zabbix 101 (Free):</strong> <a href="https://academy.zabbix.com/courses/zabbix-101" target="_blank">https://academy.zabbix.com/courses/zabbix-101</a></li>
+            <li><strong>Zabbix Academy:</strong> <a href="https://academy.zabbix.com/" target="_blank">https://academy.zabbix.com/</a></li>
+            <li><strong>Official Training:</strong> <a href="https://www.zabbix.com/training" target="_blank">https://www.zabbix.com/training</a></li>
+            <li><strong>Certification:</strong> <a href="https://www.zabbix.com/certification" target="_blank">https://www.zabbix.com/certification</a></li>
+        </ul>
+
+        <h4>Community:</h4>
+        <ul>
+            <li><strong>Forums:</strong> <a href="https://www.zabbix.com/forum/" target="_blank">https://www.zabbix.com/forum/</a></li>
+            <li><strong>Blog:</strong> <a href="https://blog.zabbix.com/" target="_blank">https://blog.zabbix.com/</a></li>
+            <li><strong>GitHub:</strong> <a href="https://github.com/zabbix/" target="_blank">https://github.com/zabbix/</a></li>
+        </ul>
+
+        <h3>9.2 Video Learning Resources</h3>
+
+        <h4>YouTube Channels:</h4>
+        <ul>
+            <li><strong>Zabbix Official:</strong> <a href="https://www.youtube.com/c/Zabbix" target="_blank">https://www.youtube.com/c/Zabbix</a></li>
+        </ul>
+
+        <h4>Recommended Playlists:</h4>
+        <ul>
+            <li>"Zabbix Handy Tips" by Zabbix Official</li>
+            <li>"Zabbix Summit Presentations" for advanced topics</li>
+            <li>Zabbix Webinars (free and on-demand)</li>
+        </ul>
+
+        <h4>Specific Video Topics:</h4>
+        <ul>
+            <li>Installing Zabbix server and database</li>
+            <li>Deploying and configuring agents</li>
+            <li>Creating items, triggers, and templates</li>
+            <li>Building dashboards</li>
+            <li>Network discovery</li>
+            <li>Problem detection and alerting</li>
+        </ul>
+
+        <h3>9.3 Books and Guides</h3>
+        <ul>
+            <li><strong>"The Zabbix Book":</strong> <a href="https://thezabbixbook.com/" target="_blank">https://thezabbixbook.com/</a></li>
+            <li>"Zabbix Cookbook" by Patrik Uytterhoeven</li>
+            <li>"Zabbix 4 Network Monitoring" by Patrik Uytterhoeven</li>
+        </ul>
+
+        <h3>9.4 Third-Party Tools and Integrations</h3>
+
+        <h4>Useful Additions:</h4>
+        <ul>
+            <li>Grafana for enhanced visualisation</li>
+            <li>Ansible for configuration management</li>
+            <li>Zabbix API for automation</li>
+            <li>Custom scripts repository</li>
+        </ul>
+
+        <h3>9.5 Getting Help</h3>
+
+        <h4>When You Need Assistance:</h4>
+        <ol>
+            <li>Review official documentation first</li>
+            <li>Search Zabbix forums for similar issues</li>
+            <li>Check Zabbix blog for updates and solutions</li>
+            <li>Engage with community (respectfully)</li>
+            <li>Consider professional services for complex issues</li>
+        </ol>
+
+        <h4>Professional Services:</h4>
+        <ul>
+            <li>Zabbix LLC (official support)</li>
+            <li>Opensource ICT Solutions (Zabbix partners)</li>
+            <li>Local consultants with Zabbix certification</li>
+        </ul>
+
+        <hr>
+
+        <h2>Appendix: Glossary</h2>
+
+        <table>
+            <tr>
+                <th>Term</th>
+                <th>Definition</th>
+            </tr>
+            <tr>
+                <td><strong>Active Agent</strong></td>
+                <td>Agent that initiates connections to the server and pushes data.</td>
+            </tr>
+            <tr>
+                <td><strong>Cache</strong></td>
+                <td>Memory area where Zabbix temporarily stores data before processing.</td>
+            </tr>
+            <tr>
+                <td><strong>HA (High Availability)</strong></td>
+                <td>System design approach that ensures minimal downtime.</td>
+            </tr>
+            <tr>
+                <td><strong>Item</strong></td>
+                <td>Individual metric or data point collected by Zabbix.</td>
+            </tr>
+            <tr>
+                <td><strong>Passive Agent</strong></td>
+                <td>Agent that waits for server to poll it for data (default mode).</td>
+            </tr>
+            <tr>
+                <td><strong>Poller</strong></td>
+                <td>Zabbix server process that collects data from agents.</td>
+            </tr>
+            <tr>
+                <td><strong>Proxy</strong></td>
+                <td>Intermediate data collector that forwards metrics to server.</td>
+            </tr>
+            <tr>
+                <td><strong>Template</strong></td>
+                <td>Reusable collection of items, triggers, and other monitoring elements.</td>
+            </tr>
+            <tr>
+                <td><strong>Trigger</strong></td>
+                <td>Condition that defines a problem state based on collected data.</td>
+            </tr>
+            <tr>
+                <td><strong>Trapper</strong></td>
+                <td>Zabbix server process that receives data pushed to it.</td>
+            </tr>
+        </table>
+
+        <hr>
+
+        <h2>Document Revision History</h2>
+
+        <table>
+            <tr>
+                <th>Version</th>
+                <th>Date</th>
+                <th>Author</th>
+                <th>Changes</th>
+            </tr>
+            <tr>
+                <td>1.0</td>
+                <td>October 2025</td>
+                <td>Chris Fryer</td>
+                <td>Initial training document</td>
+            </tr>
+            <tr>
+                <td>1.1</td>
+                <td>October 2025</td>
+                <td>Chris Fryer</td>
+                <td>Added SVG diagrams, expanded active agent overhead warnings, replaced paid training references with free Zabbix 101 course</td>
+            </tr>
+            <tr>
+                <td>1.2</td>
+                <td>October 2025</td>
+                <td>Chris Fryer</td>
+                <td>Added comprehensive HA scenarios (VMware HA + NetApp SVM-DR, Dual Independent Servers), clarified Native HA limitations, removed log management section</td>
+            </tr>
+        </table>
+
+        <hr>
+
+        <div class="info" style="margin-top: 40px;">
+            <h3>Questions or Feedback?</h3>
+            <p>This document is intended as a living training resource. If you identify errors, have suggestions for improvement, or need clarification on any topics, please contact Chris Fryer.</p>
+
+            <p><strong>Remember:</strong> The best monitoring solution is one that is simple, reliable, and well understood by the team responsible for maintaining it. When in doubt, choose simplicity and proven approaches over complex or novel architectures.</p>
+        </div>
+
+        <div style="text-align: center; margin-top: 60px; padding: 20px; background: #f5f5f5; border-radius: 5px;">
+            <p><em>End of Document</em></p>
+        </div>
+
+    </div>
+</body>
+</html>
